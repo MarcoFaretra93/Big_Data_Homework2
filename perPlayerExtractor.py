@@ -28,11 +28,20 @@ XPATH_TURNOVERS = "//tr[@id='per_game.<season>']/td[@data-stat='tov_per_g']|//tr
 XPATH_PERSONAL_FOULS = "//tr[@id='per_game.<season>']/td[@data-stat='pf_per_g']|//tr[@id='per_game.<season>']/td[@data-stat='pf_per_g']/strong"
 XPATH_POINTS = "//tr[@id='per_game.<season>']/td[@data-stat='pts_per_g']|//tr[@id='per_game.<season>']/td[@data-stat='pts_per_g']/strong"
 
+xpaths = [XPATH_PLAYED_GAMES, XPATH_PLAYED_MINUTES, XPATH_FIELD_GOALS, XPATH_FIELD_GOALS_ATTEMPTED, XPATH_FIELD_GOALS_PERCENTAGE, XPATH_3_FIELD_GOALS, XPATH_3_FIELD_GOALS_ATTEMPTED, XPATH_3_FIELD_GOALS_PERCENTAGE, XPATH_2_FIELD_GOALS, XPATH_2_FIELD_GOALS_ATTEMPTED, XPATH_2_FIELD_GOALS_PERCENTAGE, XPATH_EFFECTIVE_FIELD_GOALS_PERCENTAGE, XPATH_FREE_THROWS, XPATH_FREE_THROWS_ATTEMPTED, XPATH_FREE_THROWS_PERCENTAGE, XPATH_OFFENSIVE_REBOUNDS, XPATH_DEFENSIVE_REBOUNDS, XPATH_TOTAL_REBOUNDS, XPATH_ASSISTS, XPATH_STEALS, XPATH_BLOCKS, XPATH_TURNOVERS, XPATH_PERSONAL_FOULS, XPATH_POINTS]
+
 def applyXpaths(page, season, playerId, resultList):
-    try:
-        resultList.append(page.xpath(XPATH_PLAYED_GAMES.replace('<season>', str(season)))[0].text)
-    except Exception:
-        resultList.append(None)
+    for expression in xpaths:
+        try:
+            result = page.xpath(expression.replace('<season>', str(season)))
+            if(len(result) > 1):
+                resultList.append(page.xpath(expression.replace('<season>', str(season)))[1].text)
+            else:
+                resultList.append(page.xpath(expression.replace('<season>', str(season)))[0].text)
+        except Exception:
+            resultList.append(None)
+    
+    """
     try:
         resultList.append(page.xpath(XPATH_PLAYED_MINUTES.replace('<season>', str(season)))[0].text)
     except Exception:
@@ -124,12 +133,12 @@ def applyXpaths(page, season, playerId, resultList):
     try:
         resultList.append(page.xpath(XPATH_POINTS.replace('<season>', str(season)))[0].text)
     except Exception:
-        resultList.append(None) 
+        resultList.append(None) """
     return resultList
 
-def extractBaseStats(page, playerId, seasonStart):
-    row = [playerId, str(seasonStart) + '-' + str(seasonStart+1)]
-    row = applyXpaths(page, seasonStart+1, playerId, row)
+def extractBaseStats(page, playerId, season):
+    row = [playerId, str(season-1) + '-' + str(season)]
+    row = applyXpaths(page, season, playerId, row)
     return row
 
 def writePlayerStat(writer, playerId, debut, lastSeason, allSeason = True):
