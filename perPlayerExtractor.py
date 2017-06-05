@@ -129,9 +129,7 @@ def applyXpaths(page, season, playerId, resultList):
 
 def extractBaseStats(page, playerId, seasonStart):
     row = [playerId, str(seasonStart) + '-' + str(seasonStart+1)]
-    print row
     row = applyXpaths(page, seasonStart+1, playerId, row)
-    print row
     return row
 
 def writePlayerStat(writer, playerId, debut, lastSeason, allSeason = True):
@@ -141,13 +139,7 @@ def writePlayerStat(writer, playerId, debut, lastSeason, allSeason = True):
         lastSeason = int(lastSeason) + 1
     if allSeason:
         for season in range(int(debut), int(lastSeason)):
-            print "ciao" + str(season)
             writer.writerow(extractBaseStats(page, playerId, season))
     else:
         for season in range(int(debut), int(debut+4)):
             writer.writerow(extractBaseStats(page, playerId, season))
-
-
-# with open(outFile, 'wb') as tsvfile:
-        #writer = csv.writer(tsvfile, delimiter = '\t')
-        #writer.writerow(['PLAYER_ID','SEASON', 'GAMES_PLAYED', 'PLAYED_MINUTES', 'FIELD_GOALS', 'FIELD_GOALS_ATTEMPTED'. 'FIELD_GOALS_PERCENTAGE', '3_FIELD_GOALS', '3_FIELD_GOALS_ATTEMPTED', '3_FIELD_GOALS_PERCENTAGE', '2_FIELD_GOALS', '2_FIELD_GOALS_ATTEMPTED', '2_FIELD_GOALS_PERCENTAGE', 'EFFECTIVE_FIELD_GOALS_PERCENTAGE', 'FREE_THROWS', 'FREE_THROWS_ATTEMPTED', 'FREE_THROWS_PERCENTAGE', 'OFFENSIVE_REBOUNDS', 'DEFENSIVE_REBOUNDS', 'TOTAL_REBOUNDS', 'ASSISTS', 'STEALS', 'BLOCKS', 'TURNOVERS', 'PERSONAL_FOULS', 'POINTS'])
