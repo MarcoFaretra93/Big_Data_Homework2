@@ -127,24 +127,25 @@ def applyXpaths(page, season, playerId, resultList):
         resultList.append(None) 
     return resultList
 
-def extractBaseStats(playerId, seasonStart):
-    
-    url = 'http://www.basketball-reference.com/players/' + playerId[0] + '/' + playerId + '.html'
-    page = lxml.html.parse(url).getroot()
-    row = []
+def extractBaseStats(page, playerId, seasonStart):
     row = [playerId, str(seasonStart) + '-' + str(seasonStart+1)]
-    row += applyXpaths(page, seasonStart+1, playerId, row)
+    print row
+    row = applyXpaths(page, seasonStart+1, playerId, row)
+    print row
     return row
 
 def writePlayerStat(writer, playerId, debut, lastSeason, allSeason = True):
+    url = 'http://www.basketball-reference.com/players/' + playerId[0] + '/' + playerId + '.html'
+    page = lxml.html.parse(url).getroot()
     if lastSeason == debut:
         lastSeason = int(lastSeason) + 1
     if allSeason:
         for season in range(int(debut), int(lastSeason)):
-            writer.writerow(extractBaseStats(playerId, season))
+            print "ciao" + str(season)
+            writer.writerow(extractBaseStats(page, playerId, season))
     else:
         for season in range(int(debut), int(debut+4)):
-            writer.writerow(extractBaseStats(playerId, season))
+            writer.writerow(extractBaseStats(page, playerId, season))
 
 
 # with open(outFile, 'wb') as tsvfile:
