@@ -138,7 +138,7 @@ def extractBaseStats(playerId, seasonStart):
 
 def writePlayerStat(writer, playerId, debut, lastSeason, allSeason = True):
     if lastSeason == debut:
-        lastSeason += 1
+        lastSeason = int(lastSeason) + 1
     if allSeason:
         for season in range(int(debut), int(lastSeason)):
             writer.writerow(extractBaseStats(playerId, season))
