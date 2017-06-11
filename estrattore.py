@@ -4,6 +4,8 @@ import csv
 import string
 import perPlayerExtractor as ppExtractor
 from urllib2 import urlopen
+from bs4 import BeautifulSoup
+import wget
 
 LETTERS = list(string.ascii_lowercase) #['b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z']
 XPATH_PLAYERS_NAMES = "//th[@data-stat='player']/a/text()|//th[@data-stat='player']/strong/a/text()"
@@ -77,4 +79,55 @@ def getStats(outFile = 'stats.tsv'):
 			for line in reader:
 				print "doing " + line[1]
 				ppExtractor.writePlayerStat(writer, line[0], line[4], line[5])
+
+def getGamesForPlayerForYear(outFile = 'game_results.tsv'):
+	with open(outFile, 'wb') as tsvFile:
+		writer = csv.writer(tsvFile, delimiter = '\t')
+		head = ['PLAYER_ID', 'SEASON', 'SEASON GAME', 'DATE', 'AGE_OF_PLAYER', 'TEAM', 'AT', 'OPPONENT', 'RESULT_GAME', 'GAMES_STARTED', 'MINUTES_PLAYED', 'FIELD_GOALS',
+			'FIELD_GOAL_ATTEMPTS', 'FIELD_GOAL_PERCENTAGE', '3-POINT_FIELD_GOALS', '3-POINT_FIELD_GOAL_ATTEMPTS', '3-POINT_FIELD_GOAL_PERCENTAGE',
+			'FREE_THROWS', 'FREE_THROWS_ATTEMPTS', 'FREE_THROW_PERCENTAGE', 'OFFENSIVE_REBOUNDS', 'DEFENSIVE_REBOUNDS', 'TOTAL_REBOUNDS', 'ASSISTS', 
+			'STEALS', 'BLOCKS', 'TURNOVERS', 'PERSONAL_FOULS', 'POINTS', 'GAME_SCORE', 'PLUS/MINUS']
+		writer.writerow(head)
+		with open('stats.tsv', 'rb') as players:
+			reader = csv.reader(players, delimiter = '\t', )
+			reader.next() #skip header
+			for line in reader:
+				if(line[2] != ''):
+					with open('html_pages/' + str(line[0]) + '_' + line[1] + '.html') as f:
+						htmlPage = f.read()
+					page = lxml.html.fromstring(htmlPage)
+					data = page.xpath('//*[@id="pgl_basic"]/tbody/tr')
+					header = [line[0], line[1]]
+					for game in range(len(data)):
+						try: 
+							if('pgl_basic' in data[game].attrib['id']):
+								row = []
+								for attributo in range(1,len(data[game])):
+									if data[game][attributo].text == None:
+										try:
+											row.append(data[game][attributo][0].text)
+										except IndexError:
+											row.append(None) 
+									else:
+										row.append(data[game][attributo].text)
+
+								if(len(head) == len(header + row)):
+									writer.writerow(header + row)
+								else: 
+									writer.writerow(header + row + [None])
+						except KeyError:
+							pass
+					print "finish: " + str(line[0]) + '_' + line[1]
+
+def downloadPage():
+	with open('stats.tsv', 'rb') as players:
+			url = 'http://www.basketball-reference.com/players/'
+			reader = csv.reader(players, delimiter = '\t', )
+			reader.next() #skip header
+			for line in reader:
+				if(line[2] != ''):
+					playerUrl = url + str(line[0][0]) + '/' + str(line[0]) + '/gamelog/' + line[1].split('-')[1]
+					wget.download(playerUrl, 'html_pages/' +  str(line[0]) + '_' + line[1] + '.html')
+					time.sleep(1)
+					print "finish: " + playerUrl 
 
