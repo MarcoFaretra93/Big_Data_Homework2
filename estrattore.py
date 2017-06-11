@@ -4,8 +4,8 @@ import csv
 import string
 import perPlayerExtractor as ppExtractor
 from urllib2 import urlopen
-from bs4 import BeautifulSoup
 import wget
+import pymongo
 
 LETTERS = list(string.ascii_lowercase) #['b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z']
 XPATH_PLAYERS_NAMES = "//th[@data-stat='player']/a/text()|//th[@data-stat='player']/strong/a/text()"
@@ -13,6 +13,8 @@ XPATH_PLAYERS_IDS = "//th[@data-append-csv]/@data-append-csv"
 XPATH_PLAYERS_COLLEGE = "//td[@data-stat='college_name']"
 XPATH_PLAYERS_DEBUT = "//td[@data-stat='year_min']/text()"
 XPATH_PLAYERS_LAST_SEASON = "//td[@data-stat='year_max']/text()"
+
+MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 
 def getStateFromCollege(collegeName):
 	if(collegeName == "null"):
@@ -131,3 +133,126 @@ def downloadPage():
 					time.sleep(1)
 					print "finish: " + playerUrl 
 
+def insertAll():
+	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
+	db = client['basketball_reference']
+	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
+	with open('game_results.tsv', 'rb') as games:
+		reader = csv.reader(games, delimiter = '\t', )
+		reader.next() #skip header
+		curr_player = ""
+		curr_season = ""
+		json_seasons = {}
+		season_games = {}
+		all_game_score = 0
+		all_plus_minus = 0
+		for line in reader:
+			player_id = line[0]
+			season = line[1]
+			season_game = line[2]
+			date = line[3]
+			age_of_player = line[4]
+			team = line[5]
+			opponent = line[7]
+			games_started = line[9]
+			minutes_played = line[10]
+			field_goals = line[11]
+			field_goal_attempts = line[12]
+			field_goal_percentage = line[13]
+			three_point_field_goals = line[14]
+			three_point_field_goals_attempts = line[15]
+			three_point_field_goals_percentage = line[16]
+			free_throws = line[17]
+			free_throws_attempts = line[18]
+			free_throws_percentage = line[19]
+			offensive_rebounds = line[20]
+			defensive_rebounds = line[21]
+			total_rebounds = line[22]
+			assists = line[23]
+			steals = line[24]
+			blocks = line[25]
+			turnovers = line[26]
+			personal_fouls = line[27]
+			points = line[28]
+			game_score = line[29]
+			plus_minus = line[30]
+
+			if(curr_player == ""):
+				curr_player = player_id
+			if(curr_season == ""):
+				curr_season = season
+
+			if(curr_season != season): 
+				all_stats = insertSeasonStats(curr_season, curr_player)
+				if(all_game_score != 0):
+					all_stats['game_score'] = all_game_score / len(season_games)
+				else: 
+					all_stats['game_score'] = None
+				if(all_plus_minus != 0):
+					all_stats['plus_minus'] = all_plus_minus / len(season_games)
+				else:
+					all_stats['plus_minus'] = None
+				season_games['all'] = all_stats
+				json_seasons[curr_season] = season_games
+				curr_season = season
+				season_games = {}
+				all_game_score = 0
+				all_plus_minus = 0
+
+			if(curr_player != player_id):
+				final_obj = {curr_player : json_seasons}
+				json_seasons = {}
+				basketball_reference.insert(final_obj)
+				print player_id
+				curr_player = player_id
+
+			season_games[season_game] = {'date': date, 'age_of_player' : age_of_player, 'team' : team, 'opponent' : opponent, 'games_started': games_started
+				, 'minutes_played' : minutes_played, 'field_goals' : field_goals, 'field_goal_attempts' : field_goal_attempts, 'field_goal_percentage' : field_goal_percentage,
+				'free_throws': free_throws, 'free_throws_attempts': free_throws_attempts, 'free_throws_percentage' : free_throws_percentage, 
+				'offensive_rebounds' : offensive_rebounds, 'defensive_rebounds' : defensive_rebounds, 'total_rebounds' : total_rebounds, 'assists' : assists
+				, 'steals' : steals, 'blocks' : blocks, 'turnovers' : turnovers, 'personal_fouls': personal_fouls, 'points' : points, 'game_score': game_score, 'plus_minus' : plus_minus}
+
+			try:
+				all_game_score += float(game_score)
+			except ValueError:
+				pass
+			try:
+				all_plus_minus += float(plus_minus)
+			except ValueError:
+				pass
+		result = basketball_reference.execute()
+		print result
+
+def insertSeasonStats(season, player):
+	result = {}
+	with open('stats.tsv', 'rb') as statistiche: 
+		reader = csv.reader(statistiche, delimiter = '\t', )
+		reader.next() #skip header
+
+		for line in reader:
+			if(line[0] == player and line[1] == season):
+				result['games_played'] = line[2]
+				result['played_minutes'] = line[3]
+				result['field_goals'] = line[4]
+				result['field_goals_attempted'] = line[5]
+				result['field_goals_percentage'] = line[6]
+				result['three_field_goals'] = line[7]
+				result['three_field_goals_attempted'] = line[8]
+				result['three_field_goals_percentage'] = line[9]
+				result['2_field_goals'] = line[10]
+				result['2_field_goals_attempted'] = line[11]
+				result['2_field_goals_percentage'] = line[12]
+				result['effective_field_goals_percentage'] = line[13]
+				result['free_throws'] = line[14]
+				result['free_throws_attempted'] = line[15]
+				result['free_throws_percentage'] = line[16]
+				result['offensive_rebounds'] = line[17]
+				result['defensive_rebounds'] = line[18]
+				result['total_rebounds'] = line[19]
+				result['assists'] = line[20]
+				result['steals'] = line[21]
+				result['blocks'] = line[22]
+				result['turnovers'] = line[23]
+				result['personal_fouls'] = line[24]
+				result['points'] = line[25]
+				return result
