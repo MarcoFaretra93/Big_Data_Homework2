@@ -202,8 +202,12 @@ def insertAll():
 			if(curr_player != player_id):
 				final_obj = {curr_player : json_seasons}
 				json_seasons = {}
+				season_games = {}
+				all_game_score = 0
+				all_plus_minus = 0
 				basketball_reference.insert(final_obj)
 				print player_id
+				curr_season = season
 				curr_player = player_id
 
 			season_games[season_game] = {'date': date, 'age_of_player' : age_of_player, 'team' : team, 'opponent' : opponent, 'games_started': games_started
@@ -256,3 +260,18 @@ def insertSeasonStats(season, player):
 				result['personal_fouls'] = line[24]
 				result['points'] = line[25]
 				return result
+
+def checkMancanti():
+	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
+	db = client['basketball_reference']
+	basketball_reference = db.basketball_reference
+	with open('player.csv', 'rb') as players:
+		reader = csv.reader(players, delimiter = '\t', )
+		reader.next() #skip header
+
+		for line in reader:
+			player_id = line[0]
+			result = basketball_reference.distinct(player_id)
+			if result == []:
+				print player_id
+			
