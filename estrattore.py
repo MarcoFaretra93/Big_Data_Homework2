@@ -6,6 +6,7 @@ import perPlayerExtractor as ppExtractor
 from urllib2 import urlopen
 import wget
 import pymongo
+import redis
 
 LETTERS = list(string.ascii_lowercase) #['b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z']
 XPATH_PLAYERS_NAMES = "//th[@data-stat='player']/a/text()|//th[@data-stat='player']/strong/a/text()"
@@ -200,7 +201,7 @@ def insertAll():
 				all_plus_minus = 0
 
 			if(curr_player != player_id):
-				final_obj = {curr_player : json_seasons}
+				final_obj = {'seasons' : json_seasons, 'player_id': curr_player}
 				json_seasons = {}
 				season_games = {}
 				all_game_score = 0
@@ -275,3 +276,13 @@ def checkMancanti():
 			if result == []:
 				print player_id
 			
+def insertIntoRedisFromMongo():
+	mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
+	redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
+	db = mongoClient['basketball_reference']
+	players = db.basketball_reference.find()
+	print players[0]['player_id']
+	for player in players:
+		redisClient.set(player['player_id'], player['seasons'])
+		print 'inserted ' + player['player_id']
+
