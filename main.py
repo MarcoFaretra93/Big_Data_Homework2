@@ -83,20 +83,23 @@ def score4Shooters(percentage, tresholds, bonus = None):
 	for player in players:
 		""" da rimuovere il try catch quando sistemiamo i dati sul DB """
 		try:
+			sumPercentage = 0
 			try:  
 				season = min([int(x.split('-')[0]) for x in player['seasons'].keys()])
 				season = str(season) + '-' + str(season + 1)
 				for i in range(4):
 					allParameters = player['seasons'][season]['all']
-					if(checkTreshold(season, 'mean', [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>=')])):
-						print "passed"
+					if(checkTreshold(season, 'mean', tresholds)):
+						for percentageKeys in percentage.keys():
+							sumPercentage += float(allParameters[percentageKeys]) * percentage[percentageKeys]
 					season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
 			except KeyError:
 				pass
-
 		except ValueError: 
 			pass
+		finalScore = sumPercentage * 100
+		print str(player['player_id']) + " : " + str(finalScore)
 
-
-score4Shooters(None,None)
+""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
+score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
 sc.stop()
