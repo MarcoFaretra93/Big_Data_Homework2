@@ -201,7 +201,8 @@ def insertAll():
 				all_plus_minus = 0
 
 			if(curr_player != player_id):
-				final_obj = {'seasons' : json_seasons, 'player_id': curr_player}
+				collAndState = getCollegeAndState(curr_player)
+				final_obj = {'seasons' : json_seasons, 'player_id': curr_player, 'college': collAndState['college'], 'state': collAndState['state']}
 				json_seasons = {}
 				season_games = {}
 				all_game_score = 0
@@ -227,6 +228,17 @@ def insertAll():
 				pass
 		result = basketball_reference.execute()
 		print result
+
+def getCollegeAndState(player_id):
+	result = {}
+	with open('player.csv', 'rb') as players:
+		reader = csv.reader(players, delimiter = '\t', )
+		reader.next() #skip header
+		for line in reader:
+			if(line[0] == player_id):
+				result['college'] = line[2]
+				result['state'] = line[3]
+				return result
 
 def insertSeasonStats(season, player):
 	result = {}
@@ -261,20 +273,6 @@ def insertSeasonStats(season, player):
 				result['personal_fouls'] = line[24]
 				result['points'] = line[25]
 				return result
-
-def checkMancanti():
-	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
-	db = client['basketball_reference']
-	basketball_reference = db.basketball_reference
-	with open('player.csv', 'rb') as players:
-		reader = csv.reader(players, delimiter = '\t', )
-		reader.next() #skip header
-
-		for line in reader:
-			player_id = line[0]
-			result = basketball_reference.distinct(player_id)
-			if result == []:
-				print player_id
 			
 def insertIntoRedisFromMongo():
 	mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
