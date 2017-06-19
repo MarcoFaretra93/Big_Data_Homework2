@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  15 JUN 2017 23:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  19 JUN 2017 15:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -574,21 +574,22 @@ LaTeX Font Warning: Size substitutions with differences
 
  ) 
 Here is how much of TeX's memory you used:
- 3602 strings out of 494437
- 46006 string characters out of 6166645
+ 3603 strings out of 494437
+ 46014 string characters out of 6166645
  112876 words of memory out of 5000000
- 6887 multiletter control sequences out of 15000+600000
+ 6888 multiletter control sequences out of 15000+600000
  9803 words of font info for 37 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
  39i,6n,25p,797b,199s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx1
 2.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr12.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmr17.pfb>
-Output written on paper.pdf (1 page, 35205 bytes).
+mr10.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmr12.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr17.pfb>
+Output written on paper.pdf (1 page, 48882 bytes).
 PDF statistics:
- 20 PDF objects out of 1000 (max. 8388607)
- 13 compressed objects within 1 object stream
+ 24 PDF objects out of 1000 (max. 8388607)
+ 16 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

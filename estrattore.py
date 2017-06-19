@@ -177,7 +177,7 @@ def insertAll():
 			points = line[28]
 			game_score = line[29]
 			plus_minus = line[30]
-
+			###TODO invertire il controllo della season e il controllo del giocatore
 			if(curr_player == ""):
 				curr_player = player_id
 			if(curr_season == ""):
