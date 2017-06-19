@@ -92,7 +92,7 @@ def getGamesForPlayerForYear(outFile = 'game_results.tsv'):
 			'STEALS', 'BLOCKS', 'TURNOVERS', 'PERSONAL_FOULS', 'POINTS', 'GAME_SCORE', 'PLUS/MINUS']
 		writer.writerow(head)
 		with open('stats.tsv', 'rb') as players:
-			reader = csv.reader(players, delimiter = '\t', )
+			reader = csv.reader(players, delimiter = '\t')
 			reader.next() #skip header
 			for line in reader:
 				if(line[2] != ''):
@@ -110,14 +110,14 @@ def getGamesForPlayerForYear(outFile = 'game_results.tsv'):
 										try:
 											row.append(data[game][attributo][0].text)
 										except IndexError:
-											row.append(None) 
+											row.append("0") 
 									else:
 										row.append(data[game][attributo].text)
 
 								if(len(head) == len(header + row)):
 									writer.writerow(header + row)
 								else: 
-									writer.writerow(header + row + [None])
+									writer.writerow(header + row + ["0"])
 						except KeyError:
 							pass
 					print "finish: " + str(line[0]) + '_' + line[1]
@@ -138,6 +138,7 @@ def insertAll():
 	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 	db = client['basketball_reference']
 	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
+	#collection = db.basketball_reference
 	with open('game_results.tsv', 'rb') as games:
 		reader = csv.reader(games, delimiter = '\t', )
 		reader.next() #skip header
@@ -177,28 +178,11 @@ def insertAll():
 			points = line[28]
 			game_score = line[29]
 			plus_minus = line[30]
-			###TODO invertire il controllo della season e il controllo del giocatore
+
 			if(curr_player == ""):
 				curr_player = player_id
 			if(curr_season == ""):
 				curr_season = season
-
-			if(curr_season != season): 
-				all_stats = insertSeasonStats(curr_season, curr_player)
-				if(all_game_score != 0):
-					all_stats['game_score'] = all_game_score / len(season_games)
-				else: 
-					all_stats['game_score'] = None
-				if(all_plus_minus != 0):
-					all_stats['plus_minus'] = all_plus_minus / len(season_games)
-				else:
-					all_stats['plus_minus'] = None
-				season_games['all'] = all_stats
-				json_seasons[curr_season] = season_games
-				curr_season = season
-				season_games = {}
-				all_game_score = 0
-				all_plus_minus = 0
 
 			if(curr_player != player_id):
 				collAndState = getCollegeAndState(curr_player)
@@ -207,11 +191,30 @@ def insertAll():
 				season_games = {}
 				all_game_score = 0
 				all_plus_minus = 0
+				#collection.insert(final_obj)
 				basketball_reference.insert(final_obj)
 				print player_id
 				curr_season = season
 				curr_player = player_id
 
+			if curr_season != season:
+				all_stats = insertSeasonStats(curr_season, curr_player)
+				if(all_game_score != 0):
+					all_stats['game_score'] = all_game_score / len(season_games)
+				else: 
+					all_stats['game_score'] = '0'
+				if(all_plus_minus != 0):
+					all_stats['plus_minus'] = all_plus_minus / len(season_games)
+				else:
+					all_stats['plus_minus'] = '0'
+				season_games['all'] = all_stats
+				json_seasons[curr_season] = season_games
+				curr_season = season
+				season_games = {}
+				all_game_score = 0
+				all_plus_minus = 0
+
+			
 			season_games[season_game] = {'date': date, 'age_of_player' : age_of_player, 'team' : team, 'opponent' : opponent, 'games_started': games_started
 				, 'minutes_played' : minutes_played, 'field_goals' : field_goals, 'field_goal_attempts' : field_goal_attempts, 'field_goal_percentage' : field_goal_percentage,
 				'free_throws': free_throws, 'free_throws_attempts': free_throws_attempts, 'free_throws_percentage' : free_throws_percentage, 
