@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  20 JUN 2017 18:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  20 JUN 2017 18:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -736,13 +736,13 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <13> not available
 [1
 
 {/usr/local/texlive/2017basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 73.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 52.
 
-[2] [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 73.
+[2]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 52.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 73.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 73.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 52.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 52.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: E9DDA66EB47D43FF6C70AC7D59B0D493;275.
 
@@ -752,9 +752,9 @@ LaTeX Font Warning: Size substitutions with differences
 
  ) 
 Here is how much of TeX's memory you used:
- 7775 strings out of 494437
- 108521 string characters out of 6166645
- 217743 words of memory out of 5000000
+ 7774 strings out of 494437
+ 108515 string characters out of 6166645
+ 211743 words of memory out of 5000000
  11010 multiletter control sequences out of 15000+600000
  11502 words of font info for 45 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
@@ -767,10 +767,10 @@ s/cm/cmr17.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmr6.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmr7.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmr8.pfb>
-Output written on paper.pdf (3 pages, 86662 bytes).
+Output written on paper.pdf (2 pages, 84855 bytes).
 PDF statistics:
- 82 PDF objects out of 1000 (max. 8388607)
- 69 compressed objects within 1 object stream
- 13 named destinations out of 1000 (max. 500000)
+ 77 PDF objects out of 1000 (max. 8388607)
+ 65 compressed objects within 1 object stream
+ 12 named destinations out of 1000 (max. 500000)
  49 words of extra memory for PDF output out of 10000 (max. 10000000)
 
