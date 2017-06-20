@@ -4,6 +4,7 @@ import numpy as np
 import redis
 from pyspark import SparkContext
 import ast
+import sys
 
 from pyspark.mllib.stat import Statistics
 
@@ -100,6 +101,14 @@ def score4Shooters(percentage, tresholds, bonus = None):
 		finalScore = sumPercentage * 100
 		print str(player['player_id']) + " : " + str(finalScore)
 
-""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
-score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
+if sys.argv[0] == "populate":
+	if sys.argv[1] == "mean":
+		insertIntoRedis(calculateStats(mongoRead(),"mean"),"mean")
+	else:
+		insertIntoRedis(calculateStats(mongoRead(),"variance"),"variance")
+elif sys.argv[0] == "shooters":
+	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
+	score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
+
+
 sc.stop()

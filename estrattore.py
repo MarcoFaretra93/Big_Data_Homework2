@@ -138,7 +138,6 @@ def insertAll():
 	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 	db = client['basketball_reference']
 	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
-	#collection = db.basketball_reference
 	with open('game_results.tsv', 'rb') as games:
 		reader = csv.reader(games, delimiter = '\t', )
 		reader.next() #skip header
@@ -186,12 +185,31 @@ def insertAll():
 
 			if(curr_player != player_id):
 				collAndState = getCollegeAndState(curr_player)
+
+
+				
+
+				all_stats = insertSeasonStats(curr_season, curr_player)
+				if(all_game_score != 0):
+					all_stats['game_score'] = all_game_score / len(season_games)
+				else: 
+					all_stats['game_score'] = '0'
+				if(all_plus_minus != 0):
+					all_stats['plus_minus'] = all_plus_minus / len(season_games)
+				else:
+					all_stats['plus_minus'] = '0'
+				season_games['all'] = all_stats
+				json_seasons[curr_season] = season_games
+
+
+
+
+
 				final_obj = {'seasons' : json_seasons, 'player_id': curr_player, 'college': collAndState['college'], 'state': collAndState['state']}
 				json_seasons = {}
 				season_games = {}
 				all_game_score = 0
 				all_plus_minus = 0
-				#collection.insert(final_obj)
 				basketball_reference.insert(final_obj)
 				print player_id
 				curr_season = season
