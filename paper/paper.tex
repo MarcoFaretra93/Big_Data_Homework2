@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[10pt,a4paper,onecolumn]{article}
 \RequirePackage[italian]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -26,28 +26,19 @@
 		
 \section*{RIASSUNTO}
 
+Lo scopo di questo progetto è quello di produrre un ranking dei college americani sulla base delle performance dei primi anni di carriera dei giocatori professionistici. Allo scopo si sono analizzate tutte le statistiche dei giocatori NBA dai primi anni '50 fino ad oggi e si è semplificato il gioco fino ad individuare 6 categorie di giocatori, non mutuamente esclusive.
+Ad ogni giocatore viene assegnato un punteggio a seconda della particolare categoria che si sta analizzando, il punteggio di un college è la somma di tutti i punteggi dei giocatori provenienti da quel college, tenendo conto della particolare categoria analizzata. Lo scopo dell'analisi è quello di comprendere come alcuni college possano puntare su particolari aspetti del gioco, scelta che si dovrebbe riflettere nelle statistiche dei primi anni di carriera di un giocatore professionistico.
+
+
 \section{INTRODUZIONE} 
 
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
+La lega di pallacanestro professionistica americana, meglio conosciuta come NBA, è stata una delle prime realtà a fruire dei dati dei suoi giocatori allo scopo di perfezionare questi ultimi e rendere le franchigie partecipanti sempre più competitive. Questo flusso di dati permette oggigiorno di avere a disposizione una quantità di dati immensa, delle tipologie più disparate, dalle statistiche dei singoli giocatori o delle singole partite, fino ad arrivare alle statistiche più dettagliate play-by-play \footnote{https://www.bigdataball.com/nba-historical-playbyplay-dataset}.
 
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
+Quello che non tutti sanno è che esiste un mondo dietro a quello della lega professionistica, altrettanto vasto, ovvero quello dei college e della NCAA. Prima di rendersi disponibili per il draft i giocatori tendono a svolgere qualche anno di preparazione in uno dei molti college americani. Questi, oltre che a fornire borse di studio ai giocatori, permettono loro di affinare gli aspetti legati al gioco, oltre che a dare loro una discreta visibilità agli occhi degli scout NBA.
 
+Per questo progetto è di interesse proprio la correlazione tra gli insegnamenti del college e l'effettiva applicazione di questi nella sfera professionistica. Il nostro scopo è quello di analizzare, utilizzando tecniche Big Data, le statistiche di tutti i giocatori NBA dai primi anni '50 fino ad oggi, al fine di stilare una classifica dei college americani che hanno avuto nella loro storia almeno un giocatore che è riuscito a fare il salto di categoria nella lega professionistica.
 
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
-Lo scopo di questo progetto è quello di scoprire delle correlazioni tra gli aspetti del gioco professionistico e gli insegnamenti che i protagonisti del gioco assorbono durante gli anni del college.
+A tale scopo si sono individuate 6 categorie di giocatori: tiratori (divisa a sua volta in tiratori da 2 e tiratori da 3), rimbalzisti, all-around, +/- guys, difensori, attaccanti. Per ognuna di queste categorie si è calcolato una score per ogni giocatore sulla base di alcune particolari statistiche tra le molte disponibili\footnote{per i tiratori, ad esempio, è di fondamentale importanza la \% del tiro, mentre le statistiche relative ai rimbalzi sono state ignorate per questa categoria}. Ogni giocatore contribuisce, per la particolare categoria scelta, al punteggio totale del college di appartenenza. In questo modo college che curano di più una particolare caratteristica avranno un punteggio più alto se analizziamo la categoria legata a quella caratteristica. Una volta calcolato lo score per ogni categoria per ogni college è possibile stilare un ranking dei college sulla base delle categorie.
 
 
 \section{RISORSE}

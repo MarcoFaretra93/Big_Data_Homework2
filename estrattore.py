@@ -7,6 +7,7 @@ from urllib2 import urlopen
 import wget
 import pymongo
 import redis
+import os.path
 
 LETTERS = list(string.ascii_lowercase) #['b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z']
 XPATH_PLAYERS_NAMES = "//th[@data-stat='player']/a/text()|//th[@data-stat='player']/strong/a/text()"
@@ -130,9 +131,12 @@ def downloadPage():
 			for line in reader:
 				if(line[2] != ''):
 					playerUrl = url + str(line[0][0]) + '/' + str(line[0]) + '/gamelog/' + line[1].split('-')[1]
-					wget.download(playerUrl, 'html_pages/' +  str(line[0]) + '_' + line[1] + '.html')
-					time.sleep(1)
-					print "finish: " + playerUrl 
+					if not os.path.isfile('html_pages/'+  str(line[0]) + '_' + line[1] + '.html'):
+						wget.download(playerUrl, 'html_pages/' +  str(line[0]) + '_' + line[1] + '.html')
+						#time.sleep(1)
+						print "finish: " + playerUrl 
+					else:
+						print 'skipped: ' + playerUrl
 
 def insertAll():
 	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
@@ -187,7 +191,7 @@ def insertAll():
 				collAndState = getCollegeAndState(curr_player)
 
 
-				
+
 
 				all_stats = insertSeasonStats(curr_season, curr_player)
 				if(all_game_score != 0):
