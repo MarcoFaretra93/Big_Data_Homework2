@@ -152,35 +152,35 @@ def insertAll():
 		all_game_score = 0
 		all_plus_minus = 0
 		for line in reader:
-			player_id = line[0]
-			season = line[1]
-			season_game = line[2]
-			date = line[3]
-			age_of_player = line[4]
-			team = line[5]
-			opponent = line[7]
-			games_started = line[9]
-			minutes_played = line[10]
-			field_goals = line[11]
-			field_goal_attempts = line[12]
-			field_goal_percentage = line[13]
-			three_point_field_goals = line[14]
-			three_point_field_goals_attempts = line[15]
-			three_point_field_goals_percentage = line[16]
-			free_throws = line[17]
-			free_throws_attempts = line[18]
-			free_throws_percentage = line[19]
-			offensive_rebounds = line[20]
-			defensive_rebounds = line[21]
-			total_rebounds = line[22]
-			assists = line[23]
-			steals = line[24]
-			blocks = line[25]
-			turnovers = line[26]
-			personal_fouls = line[27]
-			points = line[28]
-			game_score = line[29]
-			plus_minus = line[30]
+			player_id = line[0] if line[0] else '0'
+			season = line[1] if line[1] else '0'
+			season_game = line[2] if line[2] else '0'
+			date = line[3] if line[3] else '0'
+			age_of_player = line[4] if line[4] else '0'
+			team = line[5] if line[5] else '0'
+			opponent = line[7] if line[7] else '0'
+			games_started = line[9] if line[9] else '0'
+			minutes_played = line[10] if line[10] else '0'
+			field_goals = line[11] if line[11] else '0'
+			field_goal_attempts = line[12] if line[12] else '0'
+			field_goal_percentage = line[13] if line[13] else '0'
+			three_point_field_goals = line[14] if line[14] else '0'
+			three_point_field_goals_attempts = line[15] if line[15] else '0'
+			three_point_field_goals_percentage = line[16] if line[16] else '0'
+			free_throws = line[17] if line[17] else '0'
+			free_throws_attempts = line[18] if line[18] else '0'
+			free_throws_percentage = line[19] if line[19] else '0'
+			offensive_rebounds = line[20] if line[20] else '0'
+			defensive_rebounds = line[21] if line[21] else '0'
+			total_rebounds = line[22] if line[22] else '0'
+			assists = line[23] if line[23] else '0'
+			steals = line[24] if line[24] else '0'
+			blocks = line[25] if line[25] else '0'
+			turnovers = line[26] if line[26] else '0'
+			personal_fouls = line[27] if line[27] else '0'
+			points = line[28] if line[28] else '0'
+			game_score = line[29] if line[29] else '0'
+			plus_minus = line[30] if line[30] else '0'
 
 			if(curr_player == ""):
 				curr_player = player_id
@@ -189,9 +189,6 @@ def insertAll():
 
 			if(curr_player != player_id):
 				collAndState = getCollegeAndState(curr_player)
-
-
-
 
 				all_stats = insertSeasonStats(curr_season, curr_player)
 				if(all_game_score != 0):
@@ -204,10 +201,6 @@ def insertAll():
 					all_stats['plus_minus'] = '0'
 				season_games['all'] = all_stats
 				json_seasons[curr_season] = season_games
-
-
-
-
 
 				final_obj = {'seasons' : json_seasons, 'player_id': curr_player, 'college': collAndState['college'], 'state': collAndState['state']}
 				json_seasons = {}

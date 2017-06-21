@@ -59,21 +59,22 @@ def getAndInsertAllStatsByType(op):
 	mongoDict = mongoRead()
 	insertIntoRedis(calculateStats(mongoDict, op),op)
 
-""" values = [(field_name, value, operator)] """
-def checkTreshold(season, op, values):
+""" values = [(field_name, operator, modifier)] """
+def checkTreshold(season, op, values, player):
+	redisClient = redis.StrictRedis(host='localhost', port=6379, db=1)
 	valuesList = redisClient.get(season + '.' + op)
 	header = redisClient.get('0000-0000').split(',')
 	check = True
 	valuesList = ast.literal_eval(valuesList)
 	for element in values:
 		field_name = element[0]
-		value = element[1]
-		""" da pulire, mettere 0 a monte dentro mongo """
+		value = player['seasons'][season]['all'][field_name]
+		#da pulire, mettere 0 a monte dentro mongo
 		if(value == None or value == ""):
 			value = "0"
-		operator = element[2]
+		operator = element[1]
 		try:
-			modifier = element[3]
+			modifier = element[2]
 		except IndexError:
 			modifier = "1"
 		index = header.index(field_name)
@@ -83,24 +84,25 @@ def checkTreshold(season, op, values):
 
 """ calcolare anche bonus """
 def score4Shooters(player, percentage, tresholds, bonus = None):
-	try:
-		sumPercentage = 0
-		try:  
-			season = min([int(x.split('-')[0]) for x in player['seasons'].keys()])
-			season = str(season) + '-' + str(season + 1)
-			for i in range(4):
-				allParameters = player['seasons'][season]['all']
-				if(checkTreshold(season, 'mean', tresholds)):
-					for percentageKeys in percentage.keys():
-						sumPercentage += float(allParameters[percentageKeys]) * percentage[percentageKeys]
-				season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
-		except KeyError:
-			pass
-	except ValueError: 
+	sumPercentage = 0
+	count = 0
+	try: 
+		season = min([int(x.split('-')[0]) for x in player['seasons'].keys()])
+		season = str(season) + '-' + str(season + 1)
+		for i in range(4):
+			allParameters = player['seasons'][season]['all']
+			if(checkTreshold(season, 'mean', tresholds, player)):
+				for percentageKeys in percentage.keys():
+					a = float(allParameters[percentageKeys])
+					b = float(percentage[percentageKeys])
+					sumPercentage += a * b
+			season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
+			count += 1
+	except KeyError:
 		pass
 	finalScore = sumPercentage * 100
-	return (player['player_id'], finalScore)
-	#print str(player['player_id']) + " : " + str(finalScore)
+	return (player['player_id'], round(finalScore/count,3))
+	#print str(player['player_id']) + " : " + str(finalScore)"""
 
 
 	"""
@@ -124,13 +126,16 @@ def score4Shooters(player, percentage, tresholds, bonus = None):
 		finalScore = sumPercentage * 100
 		print str(player['player_id']) + " : " + str(finalScore)
 	"""
+
 def analyzeShooters():
 	players = db.basketball_reference.find()
 	parallel_players = sc.parallelize([p for p in players])
 	percentage = {'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}
-	tresholds = [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')]
-	scores = parallel_players.map(lambda player: score4Shooters(player, percentage, tresholds))
-	print scores.collect()
+	#tresholds = [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')]
+	tresholds = [('2_field_goals_attempted', '>='),('played_minutes', '>=', '0.5'),('games_played', '>='),('three_field_goals_attempted', '>=')]
+	scores = parallel_players.map(lambda player: score4Shooters(player, percentage, tresholds)).collect()
+	for couple in scores:
+		print str(couple[0]) + " : " + str(couple[1])
 
 
 if sys.argv[1] == "populate":
