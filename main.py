@@ -69,9 +69,6 @@ def checkTreshold(season, op, values, player):
 	for element in values:
 		field_name = element[0]
 		value = player['seasons'][season]['all'][field_name]
-		#da pulire, mettere 0 a monte dentro mongo
-		if(value == None or value == ""):
-			value = "0"
 		operator = element[1]
 		try:
 			modifier = element[2]
@@ -82,50 +79,45 @@ def checkTreshold(season, op, values, player):
 			return  False
 	return check
 
+def getBonus(bonus, season, stats):
+	redisClient = redis.StrictRedis(host='localhost', port=6379, db=1)
+	meanStats = redisClient.get(season + '.mean')
+	header = redisClient.get('0000-0000').split(',')
+	meanStats = ast.literal_eval(meanStats)
+	bonus_name = bonus[0]
+	bonus_value = bonus[1]
+	modifier = bonus[2]
+	index = header.index(bonus_name)
+	if float(stats[bonus_name] == 0):
+		return 0
+	else:
+		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
+
 """ calcolare anche bonus """
 def score4Shooters(player, percentage, tresholds, bonus = None):
-	sumPercentage = 0
+	totalScore = 0
 	count = 0
 	try: 
 		season = min([int(x.split('-')[0]) for x in player['seasons'].keys()])
 		season = str(season) + '-' + str(season + 1)
 		for i in range(4):
+			annualScore = 0
 			allParameters = player['seasons'][season]['all']
 			if(checkTreshold(season, 'mean', tresholds, player)):
 				for percentageKeys in percentage.keys():
-					a = float(allParameters[percentageKeys])
-					b = float(percentage[percentageKeys])
-					sumPercentage += a * b
+					annualScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
+					totalScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
+			if bonus != None:
+				for b in bonus:
+					totalScore += annualScore * getBonus(b, season, allParameters)
 			season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
 			count += 1
 	except KeyError:
 		pass
-	finalScore = sumPercentage * 100
+	finalScore = totalScore * 100
 	return (player['player_id'], round(finalScore/count,3))
-	#print str(player['player_id']) + " : " + str(finalScore)"""
 
 
-	"""
-	for player in players:
-		#da rimuovere il try catch quando sistemiamo i dati sul DB
-		try:
-			sumPercentage = 0
-			try:  
-				season = min([int(x.split('-')[0]) for x in player['seasons'].keys()])
-				season = str(season) + '-' + str(season + 1)
-				for i in range(4):
-					allParameters = player['seasons'][season]['all']
-					if(checkTreshold(season, 'mean', tresholds)):
-						for percentageKeys in percentage.keys():
-							sumPercentage += float(allParameters[percentageKeys]) * percentage[percentageKeys]
-					season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
-			except KeyError:
-				pass
-		except ValueError: 
-			pass
-		finalScore = sumPercentage * 100
-		print str(player['player_id']) + " : " + str(finalScore)
-	"""
 
 def analyzeShooters():
 	players = db.basketball_reference.find()
@@ -138,6 +130,16 @@ def analyzeShooters():
 		print str(couple[0]) + " : " + str(couple[1])
 
 
+def analyzeAttacker():
+	players = db.basketball_reference.find().limit(100)
+	parallel_players = sc.parallelize([p for p in players])
+	percentage = {'effective_field_goals_percentage' : 0.3, 'points' : 0.7}
+	tresholds = [('field_goals_attempted', '>='),('played_minutes', '>=', '0.5')]
+	bonus = [('turnovers', 0.2, -1)]
+	scores = parallel_players.map(lambda player: score4Shooters(player, percentage, tresholds, bonus)).collect()
+	for couple in scores:
+		print str(couple[0]) + " : " + str(couple[1])
+
 if sys.argv[1] == "populate":
 	if sys.argv[2] == "mean":
 		insertIntoRedis(calculateStats(mongoRead(),"mean"),"mean")
@@ -149,6 +151,8 @@ elif sys.argv[1] == "shooters":
 	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
 	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
 	analyzeShooters()
+elif sys.argv[1] == "attacker":
+	analyzeAttacker()
 
 
 sc.stop()
