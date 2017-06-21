@@ -79,10 +79,30 @@ def checkTreshold(season, op, values):
 	return check
 
 """ calcolare anche bonus """
-def score4Shooters(percentage, tresholds, bonus = None):
-	players = db.basketball_reference.find()
+def score4Shooters(player, percentage, tresholds, bonus = None):
+	try:
+		sumPercentage = 0
+		try:  
+			season = min([int(x.split('-')[0]) for x in player['seasons'].keys()])
+			season = str(season) + '-' + str(season + 1)
+			for i in range(4):
+				allParameters = player['seasons'][season]['all']
+				if(checkTreshold(season, 'mean', tresholds)):
+					for percentageKeys in percentage.keys():
+						sumPercentage += float(allParameters[percentageKeys]) * percentage[percentageKeys]
+				season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
+		except KeyError:
+			pass
+	except ValueError: 
+		pass
+	finalScore = sumPercentage * 100
+	return (player['player_id'], finalScore)
+	#print str(player['player_id']) + " : " + str(finalScore)
+
+
+	"""
 	for player in players:
-		""" da rimuovere il try catch quando sistemiamo i dati sul DB """
+		#da rimuovere il try catch quando sistemiamo i dati sul DB
 		try:
 			sumPercentage = 0
 			try:  
@@ -100,6 +120,16 @@ def score4Shooters(percentage, tresholds, bonus = None):
 			pass
 		finalScore = sumPercentage * 100
 		print str(player['player_id']) + " : " + str(finalScore)
+	"""
+def analyzeShooters():
+	players = db.basketball_reference.find()
+	parallel_players = sc.parallelize([p for p in players])
+	percentage = {'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}
+	tresholds = [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')]
+	scores = parallel_players.map(lambda player: score4Shooters(player, percentage, tresholds))
+	print scores.collect()
+
+
 
 if sys.argv[0] == "populate":
 	if sys.argv[1] == "mean":
@@ -108,7 +138,8 @@ if sys.argv[0] == "populate":
 		insertIntoRedis(calculateStats(mongoRead(),"variance"),"variance")
 elif sys.argv[0] == "shooters":
 	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
-	score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
+	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
+	analyzeShooters()
 
 
 sc.stop()
