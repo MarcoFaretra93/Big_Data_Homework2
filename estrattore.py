@@ -266,30 +266,30 @@ def insertSeasonStats(season, player):
 
 		for line in reader:
 			if(line[0] == player and line[1] == season):
-				result['games_played'] = line[2]
-				result['played_minutes'] = line[3]
-				result['field_goals'] = line[4]
-				result['field_goals_attempted'] = line[5]
-				result['field_goals_percentage'] = line[6]
-				result['three_field_goals'] = line[7]
-				result['three_field_goals_attempted'] = line[8]
-				result['three_field_goals_percentage'] = line[9]
-				result['2_field_goals'] = line[10]
-				result['2_field_goals_attempted'] = line[11]
-				result['2_field_goals_percentage'] = line[12]
-				result['effective_field_goals_percentage'] = line[13]
-				result['free_throws'] = line[14]
-				result['free_throws_attempted'] = line[15]
-				result['free_throws_percentage'] = line[16]
-				result['offensive_rebounds'] = line[17]
-				result['defensive_rebounds'] = line[18]
-				result['total_rebounds'] = line[19]
-				result['assists'] = line[20]
-				result['steals'] = line[21]
-				result['blocks'] = line[22]
-				result['turnovers'] = line[23]
-				result['personal_fouls'] = line[24]
-				result['points'] = line[25]
+				result['games_played'] = line[2] if line[2] else '0'
+				result['played_minutes'] = line[3] if line[3] else '0'
+				result['field_goals'] = line[4]  if line[4] else '0'
+				result['field_goals_attempted'] = line[5] if line[5] else '0'
+				result['field_goals_percentage'] = line[6] if line[6] else '0'
+				result['three_field_goals'] = line[7] if line[7] else '0'
+				result['three_field_goals_attempted'] = line[8] if line[8] else '0'
+				result['three_field_goals_percentage'] = line[9] if line[9] else '0'
+				result['2_field_goals'] = line[10] if line[10] else '0'
+				result['2_field_goals_attempted'] = line[11] if line[11] else '0'
+				result['2_field_goals_percentage'] = line[12] if line[12] else '0'
+				result['effective_field_goals_percentage'] = line[13] if line[13] else '0'
+				result['free_throws'] = line[14] if line[14] else '0'
+				result['free_throws_attempted'] = line[15] if line[15] else '0'
+				result['free_throws_percentage'] = line[16] if line[16] else '0'
+				result['offensive_rebounds'] = line[17] if line[17] else '0'
+				result['defensive_rebounds'] = line[18] if line[18] else '0'
+				result['total_rebounds'] = line[19] if line[19] else '0'
+				result['assists'] = line[20] if line[20] else '0'
+				result['steals'] = line[21] if line[21] else '0'
+				result['blocks'] = line[22] if line[22] else '0'
+				result['turnovers'] = line[23] if line[23] else '0'
+				result['personal_fouls'] = line[24] if line[24] else '0'
+				result['points'] = line[25] if line[25] else '0'
 				return result
 			
 def insertIntoRedisFromMongo():
