@@ -14,6 +14,7 @@ mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = mongoClient['basketball_reference']
 redisClient = redis.StrictRedis(host='localhost', port=6379, db=1)
 
+""" legge da mongo e torna un dizionario {stagione : all_statistica di quell'anno per tutti i giocatori} """
 def mongoRead():
 	years2stats = dict()
 	players = db.basketball_reference.find()
@@ -26,6 +27,7 @@ def mongoRead():
 				years2stats[year].append(np.array([float(x) if x != None and x != "" else 0 for x in player['seasons'][year]['all'].values()]))
 	return years2stats
 
+""" calcola media e varianza prendendo come input il risultato di mongoRead e l'op (mean o variance) """
 def calculateStats(years2stats, op):
 	result = dict()
 	for year in years2stats:
@@ -45,6 +47,7 @@ def calculateStats(years2stats, op):
 			result[year] = valuesList
 	return result
 
+""" prende il risultato di calculateStats e lo inserisce dentro redis """
 def insertIntoRedis(dictionary, op):
 	for key in dictionary:
 		dictionary[key] = map(lambda s : s.strip(), dictionary[key])
@@ -130,13 +133,14 @@ def analyzeShooters():
 	print scores.collect()
 
 
-
-if sys.argv[0] == "populate":
-	if sys.argv[1] == "mean":
+if sys.argv[1] == "populate":
+	if sys.argv[2] == "mean":
 		insertIntoRedis(calculateStats(mongoRead(),"mean"),"mean")
-	else:
+	elif sys.argv[2] == "variance":
 		insertIntoRedis(calculateStats(mongoRead(),"variance"),"variance")
-elif sys.argv[0] == "shooters":
+	else:
+		print "error: need second argument"
+elif sys.argv[1] == "shooters":
 	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
 	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
 	analyzeShooters()
