@@ -8,6 +8,7 @@ import wget
 import pymongo
 import redis
 import os.path
+import sys
 
 LETTERS = list(string.ascii_lowercase) #['b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z']
 XPATH_PLAYERS_NAMES = "//th[@data-stat='player']/a/text()|//th[@data-stat='player']/strong/a/text()"
@@ -17,6 +18,12 @@ XPATH_PLAYERS_DEBUT = "//td[@data-stat='year_min']/text()"
 XPATH_PLAYERS_LAST_SEASON = "//td[@data-stat='year_max']/text()"
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
+
+client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
+db = client['basketball_reference']
+redisClient = redis.StrictRedis(host='localhost', port=6379, db=sys.argv[3])
+
+
 
 def getStateFromCollege(collegeName):
 	if(collegeName == "null"):
@@ -139,8 +146,6 @@ def downloadPage():
 						print 'skipped: ' + playerUrl
 
 def insertAll():
-	client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
-	db = client['basketball_reference']
 	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
 	with open('game_results.tsv', 'rb') as games:
 		reader = csv.reader(games, delimiter = '\t', )
@@ -293,12 +298,17 @@ def insertSeasonStats(season, player):
 				return result
 			
 def insertIntoRedisFromMongo():
-	mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
-	redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
-	db = mongoClient['basketball_reference']
 	players = db.basketball_reference.find()
 	print players[0]['player_id']
 	for player in players:
 		redisClient.set(player['player_id'], player['seasons'])
 		print 'inserted ' + player['player_id']
+
+if sys.argv[1] == "all":
+	if sys.argv[2] == "delete":
+		db.basketball_reference.drop()
+		redisClient.flushall()
+	insertAll()
+	insertIntoRedisFromMongo()
+
 
