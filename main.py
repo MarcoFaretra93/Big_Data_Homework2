@@ -71,22 +71,41 @@ if sys.argv[1] == "populate":
 		#insertIntoRedis(calculateStats(mongoRead(),"variance"),"variance")
 	else:
 		print "error: need second argument"
+
 elif sys.argv[1] == "2-point-shooters":
 	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
 	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
 	percentage = {'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}
 	tresholds = [('2_field_goals_attempted', '>='),('played_minutes', '>=', '0.5'),('games_played', '>='),('three_field_goals_attempted', '>=')]
-	scoring.analyzeShooters(sc, percentage, tresholds)
+	scoring.analyze(sc, percentage, tresholds)
+
 elif sys.argv[1] == "3-point-shooters":
 	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
 	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
-	percentage = {'2_field_goals_percentage' : 0.05, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.8}
+	percentage = {'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.85}
 	tresholds = [('2_field_goals_attempted', '>='),('played_minutes', '>=', '0.5'),('games_played', '>='),('three_field_goals_attempted', '>=')]
-	scoring.analyzeShooters(sc, percentage, tresholds)
+	scoring.analyze(sc, percentage, tresholds)
+
 elif sys.argv[1] == "attackers":
 	percentage = {'effective_field_goals_percentage' : 0.3, 'points' : 0.7}
 	tresholds = [('field_goals_attempted', '>='),('played_minutes', '>=', '0.5')]
-	scoring.analyzeAttackers(sc, percentage, tresholds)
+	scoring.analyze(sc, percentage, tresholds)
+
+elif sys.argv[1] == "defenders":
+	percentage = {'defensive_rebounds' : 0.5, 'steals' : 0.3, 'blocks' : 0.2}
+	tresholds = [('played_minutes', '>=', '0.5'),('games_played', '>=')]
+	bonus = [('personal_fouls', 0.2, -1)]
+	scoring.analyze(sc, percentage, tresholds, bonus)
+
+elif sys.argv[1] == "rebounders":
+	percentage = {'total_rebounds' : 0.9, 'steals' : 0.1}
+	tresholds = [('played_minutes', '>=', '0.5'),('games_played', '>=')]
+	scoring.analyze(sc, percentage, tresholds)
+
+elif sys.argv[1] == "plus_minus":
+	percentage = {'plus_minus' : 1}
+	tresholds = [('played_minutes', '>=', '0.5'),('games_played', '>=')]
+	scoring.analyze(sc, percentage, tresholds)
 
 
 sc.stop()
