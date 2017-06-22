@@ -5,6 +5,7 @@ from pyspark import SparkContext
 import sys
 import util
 import scoring
+import bson
 
 from pyspark.mllib.stat import Statistics
 
