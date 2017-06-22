@@ -3,11 +3,14 @@ import util
 import redis
 import ast
 import os.path
-
+import csv
+import redis
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = mongoClient['basketball_reference']
+client = redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 
 """ values = [(field_name, operator, modifier)] """
 def checkTreshold(season, op, values, player):
@@ -81,10 +84,25 @@ def analyzeAttackers(spark_context, percentage, tresholds):
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 
-def CollegeAnalysis(spark_context, category):
-	players = db.basketball_reference.find({'college':{$ne : 'null'}})
+def collegeAnalysis(spark_context, category):
+	player2Score = []
 	if not os.path.isfile('res_' + category + '.tsv'):
-		parallel_players = spark_context.parallelize([p for p in players])
+		player2Score = analyze(category).collect()
+	else:
+		with open('res_' + category + '.tsv') as playerFile:
+			player2Score = csv.reader(playerFile, delimiter='\t')
+	toBeParallelized = []
+	for player in player2Score:
+		college = client.get(player)['college']
+		toBeParallelized.append((college, player[1], player[2]))
+	rdd = spark_context.parallelize(toBeParallelized)
+	college2score = rdd.map(lambda (college, player, score): (college, score)).reduce(lambda (score1, score2): score1+score2).collect()
+	util.pretty_print()
+
+	#players = db.basketball_reference.find({'college' : $ne : {'null'}})
+
+
+
 		
 
 

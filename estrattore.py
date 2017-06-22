@@ -21,7 +21,7 @@ MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 
 client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = client['basketball_reference']
-redisClient = redis.StrictRedis(host='localhost', port=6379, db=sys.argv[3])
+redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
 
@@ -298,17 +298,18 @@ def insertSeasonStats(season, player):
 				return result
 			
 def insertIntoRedisFromMongo():
-	players = db.basketball_reference.find()
+	players = db.basketball_reference.find({},{'_id': False})
 	print players[0]['player_id']
 	for player in players:
-		redisClient.set(player['player_id'], player['seasons'])
+		redisClient.set(player['player_id'], player)
 		print 'inserted ' + player['player_id']
 
-if sys.argv[1] == "all":
-	if sys.argv[2] == "delete":
-		db.basketball_reference.drop()
-		redisClient.flushall()
-	insertAll()
-	insertIntoRedisFromMongo()
+if __name__ == '__main__':
+	if sys.argv[1] == "all":
+		if sys.argv[2] == "delete":
+			db.basketball_reference.drop()
+			redisClient.flushall()
+		insertAll()
+		insertIntoRedisFromMongo()
 
 
