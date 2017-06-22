@@ -81,8 +81,12 @@ def analyzeAttackers(spark_context, percentage, tresholds):
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 
-def CollegeAnalysis(spark_context):
+def CollegeAnalysis(spark_context, category):
 	players = db.basketball_reference.find({'college':{$ne : 'null'}})
+	if not os.path.isfile('res_' + category + '.tsv'):
+		parallel_players = spark_context.parallelize([p for p in players])
+		
+
 
 	
 
