@@ -11,6 +11,7 @@ from pyspark.mllib.stat import Statistics
 #TODO: ottimizzare l'inserimento su mongo tenendo conto della posizione del cursore
 
 sc = SparkContext(appName="SummaryStatisticsExample")  # SparkContext
+sc.addPyFile('/home/hadoop/Big_Data_Homework2/scoring.py')
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
