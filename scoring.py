@@ -72,7 +72,7 @@ def score4Player(player, percentage, tresholds, bonus = None):
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
-def analyze(spark_context, percentage, tresholds, bonus = None)
+def analyze(spark_context, percentage, tresholds, bonus = None):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
