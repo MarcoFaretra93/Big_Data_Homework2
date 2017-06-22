@@ -18,6 +18,7 @@ sc.addPyFile('/home/hadoop/Big_Data_Homework2/lxml.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/pymongo.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/redis.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/wget.py')
+sc.addPyFile('/home/hadoop/Big_Data_Homework2/bson.zip')
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
