@@ -12,7 +12,7 @@ from pyspark.mllib.stat import Statistics
 
 sc = SparkContext(appName="SummaryStatisticsExample")  # SparkContext
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/scoring.py')
-sc.addPyFile('/home/hadoop/Big_Data_Homework2/utils.py')
+sc.addPyFile('/home/hadoop/Big_Data_Homework2/util.py')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/lxml.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/pymongo.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/redis.zip')
