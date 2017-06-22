@@ -23,7 +23,9 @@ sc.addPyFile('/home/hadoop/Big_Data_Homework2/bson.zip')
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = mongoClient['basketball_reference']
-redisClient = redis.StrictRedis(host='localhost', port=6379, db=1)
+REDIS_LOCAL_CONNECTION = "localhost"
+REDIS_CLUSTER_CONNECTION = "ec2-52-38-110-138.us-west-2.compute.amazonaws.com"
+redisClient = redis.StrictRedis(host=REDIS_CLUSTER_CONNECTION, port=6379, db=1)
 
 """ legge da mongo e torna un dizionario {stagione : all_statistica di quell'anno per tutti i giocatori} """
 def mongoRead():

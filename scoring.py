@@ -7,14 +7,16 @@ import csv
 import redis
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
+REDIS_LOCAL_CONNECTION = "localhost"
+REDIS_CLUSTER_CONNECTION = "ec2-52-38-110-138.us-west-2.compute.amazonaws.com"
 mongoClient = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = mongoClient['basketball_reference']
-client = redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
+client = redisClient = redis.StrictRedis(host=REDIS_LOCAL_CONNECTION, port=6379, db=0)
 
 
 """ values = [(field_name, operator, modifier)] """
 def checkTreshold(season, op, values, player):
-	redisClient = redis.StrictRedis(host='localhost', port=6379, db=1)
+	redisClient = redis.StrictRedis(host=REDIS_CLUSTER_CONNECTION, port=6379, db=1)
 	valuesList = redisClient.get(season + '.' + op)
 	header = redisClient.get('0000-0000').split(',')
 	check = True
@@ -34,7 +36,7 @@ def checkTreshold(season, op, values, player):
 
 """ scorefinale += scoreAnnuale * percent*(valore - mediaValore) """
 def getBonus(bonus, season, stats):
-	redisClient = redis.StrictRedis(host='localhost', port=6379, db=1)
+	redisClient = redis.StrictRedis(host=REDIS_CLUSTER_CONNECTION, port=6379, db=1)
 	meanStats = redisClient.get(season + '.mean')
 	header = redisClient.get('0000-0000').split(',')
 	meanStats = ast.literal_eval(meanStats)
