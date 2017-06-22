@@ -74,7 +74,7 @@ def score4Player(player, percentage, tresholds, bonus = None):
 
 def analyze(spark_context, percentage, tresholds, bonus = None):
 	players = db.basketball_reference.find()
-	parallel_players = spark_context.parallelize([p for p in players])
+	parallel_players = spark_context.parallelize([p for p in players],10)
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 

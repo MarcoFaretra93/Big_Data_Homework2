@@ -8,6 +8,8 @@ import scoring
 
 from pyspark.mllib.stat import Statistics
 
+#TODO: ottimizzare l'inserimento su mongo tenendo conto della posizione del cursore
+
 sc = SparkContext(appName="SummaryStatisticsExample")  # SparkContext
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
