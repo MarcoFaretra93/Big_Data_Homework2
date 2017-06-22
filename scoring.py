@@ -68,25 +68,20 @@ def score4Player(player, percentage, tresholds, bonus = None):
 	finalScore = totalScore * 100
 	return (player['player_id'], finalScore/count)
 
-""" QUESTI DUE METODI SI POSSONO RIFATTORIZZARE IN UNO SOLO PASSANDO percentage e tresholds COME PARAMETRI"""
-def analyzeShooters(spark_context):
+def analyzeShooters(spark_context, percentage, tresholds):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
-	percentage = {'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}
-	tresholds = [('2_field_goals_attempted', '>='),('played_minutes', '>=', '0.5'),('games_played', '>='),('three_field_goals_attempted', '>=')]
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
-	
-def analyzeAttackers(spark_context):
+
+def analyzeAttackers(spark_context, percentage, tresholds):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
-	percentage = {'effective_field_goals_percentage' : 0.3, 'points' : 0.7}
-	tresholds = [('field_goals_attempted', '>='),('played_minutes', '>=', '0.5')]
 	#bonus = [('effective_field_goals_percentage', 0.2, 100)]
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 
-def shootersCollegeAnalysis(spark_context):
+def CollegeAnalysis(spark_context):
 	players = db.basketball_reference.find({'college':{$ne : 'null'}})
 
 	
