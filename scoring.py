@@ -2,6 +2,7 @@ import pymongo
 import util
 import redis
 import ast
+import os.path
 
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
@@ -68,57 +69,17 @@ def score4Player(player, percentage, tresholds, bonus = None):
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
-def analyzeShooters(spark_context, percentage, tresholds, bonus = None):
+def analyze(spark_context, percentage, tresholds, bonus = None)
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
-	if bonus == None:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
-	else:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
-	util.pretty_print(util.normalize_scores(100,scores))
-	#scores = normalize_scores(255,scores)
-	#for couple in scores:
-	#	print str(couple[0]) + " : " + str(couple[1])
-
-def analyzeAttackers(spark_context, percentage, tresholds, bonus = None):
-	players = db.basketball_reference.find()
-	parallel_players = spark_context.parallelize([p for p in players])
-	#bonus = [('effective_field_goals_percentage', 0.2, 100)]
-	if bonus == None:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
-	else: 
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
-	util.pretty_print(util.normalize_scores(100,scores))
-	#for couple in scores:
-		#print str(couple[0]) + " : " + str(couple[1])
-
-def analyzeDefenders(spark_context, percentage, tresholds, bonus = None):
-	players = db.basketball_reference.find()
-	parallel_players = spark_context.parallelize([p for p in players])
-	if bonus == None:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
-	else:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
+	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 
-def analyzeRebounders(spark_context, percentage, tresholds, bonus = None):
-	players = db.basketball_reference.find()
-	parallel_players = spark_context.parallelize([p for p in players])
-	if bonus == None:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
-	else:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
-	util.pretty_print(util.normalize_scores(100,scores))
-
-def analyzePlusMinusGuys(spark_context, percentage, tresholds, bonus = None):
-	players = db.basketball_reference.find()
-	parallel_players = spark_context.parallelize([p for p in players])
-	if bonus == None:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
-	else:
-		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
-	util.pretty_print(util.normalize_scores(100,scores))
-
+def CollegeAnalysis(spark_context, category):
+	players = db.basketball_reference.find({'college':{$ne : 'null'}})
+	if not os.path.isfile('res_' + category + '.tsv'):
+		parallel_players = spark_context.parallelize([p for p in players])
+		
 
 
 
