@@ -72,11 +72,15 @@ if sys.argv[1] == "populate":
 	else:
 		print "error: need second argument"
 elif sys.argv[1] == "shooters":
-	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
-	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
-	scoring.analyzeShooters(sc)
+	if sys.argv[2] == "college":
+		scoring.shootersCollegeAnalisys(sc)
+	else:
+		scoring.analyzeShooters(sc)
 elif sys.argv[1] == "attackers":
-	scoring.analyzeAttackers(sc)
+	if sys.argv[2] == "college":
+		scoring.shootersCollegeAnalisys(sc)
+	else:
+		scoring.analyzeAttackers(sc)
 
 
 sc.stop()

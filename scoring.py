@@ -2,6 +2,7 @@ import pymongo
 import util
 import redis
 import ast
+import os.path
 
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
@@ -72,14 +73,10 @@ def analyzeShooters(spark_context):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
 	percentage = {'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}
-	#tresholds = [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')]
 	tresholds = [('2_field_goals_attempted', '>='),('played_minutes', '>=', '0.5'),('games_played', '>='),('three_field_goals_attempted', '>=')]
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
-	#scores = normalize_scores(255,scores)
-	#for couple in scores:
-	#	print str(couple[0]) + " : " + str(couple[1])
-
+	
 def analyzeAttackers(spark_context):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
@@ -88,9 +85,11 @@ def analyzeAttackers(spark_context):
 	#bonus = [('effective_field_goals_percentage', 0.2, 100)]
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
-	#for couple in scores:
-		#print str(couple[0]) + " : " + str(couple[1])
 
+def shootersCollegeAnalysis(spark_context):
+	players = db.basketball_reference.find({'college':{$ne : 'null'}})
+
+	
 
 
 
