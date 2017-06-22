@@ -54,6 +54,7 @@ def score4Player(player, percentage, tresholds, bonus = None):
 			annualScore = 0
 			allParameters = player['seasons'][season]['all']
 			if(checkTreshold(season, 'mean', tresholds, player)):
+				count += 1 
 				for percentageKeys in percentage.keys():
 					annualScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
 					totalScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
@@ -61,29 +62,62 @@ def score4Player(player, percentage, tresholds, bonus = None):
 				for b in bonus:
 					totalScore += annualScore * getBonus(b, season, allParameters)
 			season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
-			count += 1
 	except KeyError:
 		pass
 	finalScore = totalScore * 100
+	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
-def analyzeShooters(spark_context, percentage, tresholds):
+def analyzeShooters(spark_context, percentage, tresholds, bonus = None):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
-	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	if bonus == None:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	else:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 	#scores = normalize_scores(255,scores)
 	#for couple in scores:
 	#	print str(couple[0]) + " : " + str(couple[1])
 
-def analyzeAttackers(spark_context, percentage, tresholds):
+def analyzeAttackers(spark_context, percentage, tresholds, bonus = None):
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
 	#bonus = [('effective_field_goals_percentage', 0.2, 100)]
-	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	if bonus == None:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	else: 
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
 	util.pretty_print(util.normalize_scores(100,scores))
 	#for couple in scores:
 		#print str(couple[0]) + " : " + str(couple[1])
+
+def analyzeDefenders(spark_context, percentage, tresholds, bonus = None):
+	players = db.basketball_reference.find()
+	parallel_players = spark_context.parallelize([p for p in players])
+	if bonus == None:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	else:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
+	util.pretty_print(util.normalize_scores(100,scores))
+
+def analyzeRebounders(spark_context, percentage, tresholds, bonus = None):
+	players = db.basketball_reference.find()
+	parallel_players = spark_context.parallelize([p for p in players])
+	if bonus == None:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	else:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
+	util.pretty_print(util.normalize_scores(100,scores))
+
+def analyzePlusMinusGuys(spark_context, percentage, tresholds, bonus = None):
+	players = db.basketball_reference.find()
+	parallel_players = spark_context.parallelize([p for p in players])
+	if bonus == None:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds)).collect()
+	else:
+		scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
+	util.pretty_print(util.normalize_scores(100,scores))
 
 
 
