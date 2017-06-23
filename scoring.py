@@ -5,14 +5,17 @@ import ast
 import os.path
 import csv
 import redis
+import string
 import constants
 from pyspark import SparkContext
+
+LETTERS = list(string.ascii_lowercase)
 
 sc = SparkContext.getOrCreate()
 
 mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
 db = mongoClient['basketball_reference']
-client = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
+redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 
 
 """ values = [(field_name, operator, modifier)] """
@@ -77,29 +80,51 @@ def score4Player(player, percentage, tresholds, bonus = None):
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
-"""ritornare l'rdd se out false altrimenti stampare"""
-def analyze(percentage, tresholds, out=False, bonus = None):
+"""Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
+def analyze(percentage, tresholds, out = False, bonus = None):
 	spark_context = SparkContext.getOrCreate()
+	"""player_list = []
+	parallel_players = []
+	for letter in LETTERS:
+		for key in redisc.scan_iter(letter + '*'):
+			player_list.append(ast.literal_eval(redisc.get(key)))
+		parallel_players.append(spark_context.parallelize(player_list))
+		player_list = []
+	parallel_players = spark_context.union(parallel_players)"""
 	players = db.basketball_reference.find()
 	parallel_players = spark_context.parallelize([p for p in players])
-	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus)).collect()
-	util.pretty_print(util.normalize_scores(100,scores))
+	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus))
+	if out:
+		util.pretty_print(util.normalize_scores(100,scores.collect()))
+	else:
+		return scores
+
+def collegeScore(player, score):
+	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
+	college = ast.literal_eval(redisc.get(player))['college']
+	return (college, score)
 
 """ parallelizzare, i worker possono chiedere i dati a redis senza passare per il master """
-def collegeAnalysis(spark_context, category):
+def collegeAnalysis(percentage, tresholds, bonus = None, category=""):
+	spark_context = SparkContext.getOrCreate()
 	player2Score = []
 	if not os.path.isfile('res_' + category + '.tsv'):
-		player2Score = analyze(category).collect()
+		player2Score = analyze(percentage, tresholds, bonus = bonus)
 	else:
 		with open('res_' + category + '.tsv') as playerFile:
 			player2Score = csv.reader(playerFile, delimiter='\t')
+
+	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda score1, score2: score1+score2).collect()
+	util.pretty_print(college2score)
+
+"""
 	toBeParallelized = []
 	for player in player2Score:
-		college = client.get(player)['college']
+		college = ast.literal_eval(redisc.get(player))['college']
 		toBeParallelized.append((college, player[1], player[2]))
 	rdd = spark_context.parallelize(toBeParallelized)
 	college2score = rdd.map(lambda (college, player, score): (college, score)).reduce(lambda (score1, score2): score1+score2).collect()
-	util.pretty_print()
+"""
 
 
 		
