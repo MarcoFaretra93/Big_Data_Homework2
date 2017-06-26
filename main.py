@@ -37,7 +37,6 @@ sc = SparkContext.getOrCreate(conf)
 import util
 import scoring
 
-#TODO: ottimizzare l'inserimento su mongo tenendo conto della posizione del cursore
 if args.distributed:
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/scoring.py')
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/util.py')
@@ -83,9 +82,9 @@ elif args.action == "plus_minus":
 	percentage = constants.pm_percentage
 	tresholds = constants.pm_tresholds
 
-if args.college:
+if args.college and args.action != 'populate':
 	scoring.collegeAnalysis(percentage, tresholds, bonus = bonus)
-else:
+elif args.action != 'populate':
 	scoring.analyze(percentage, tresholds, bonus = bonus, out=True)
 
 sc.stop()

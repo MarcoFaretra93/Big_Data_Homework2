@@ -3,6 +3,7 @@ import pymongo
 import redis
 import numpy as np
 import constants
+import types
 from pyspark import SparkContext
 from pyspark.mllib.stat import Statistics
 
@@ -13,8 +14,16 @@ mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
 db = mongoClient['basketball_reference']
 redisClient = redis.StrictRedis(host=constants.REDIS_CONNECTION, port=6379, db=1)
 
+def isTuple(x): return type(x) == types.TupleType
+
+def flatten(T):
+	if not isTuple(T): return (T,)
+	elif len(T) == 0: return ()
+	else: 
+		return flatten(T[0]) + flatten(T[1:]) 
+
 def pretty_print(couples):
-	map(lambda (x,y): print('\t'.join([x,str(y)])), couples)
+	map(lambda x: print('\t'.join([str(y) for y in flatten(x)])), couples)
 
 def normalize_scores(max_value, scores):
 	max_score = max([x for (y,x) in scores])

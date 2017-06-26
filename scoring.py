@@ -95,10 +95,6 @@ def splitRedisRecord(limit, spark_context):
 			parallel_players.append(spark_context.parallelize(player_list))
 	return spark_context.union(parallel_players)
 
-
-
-
-
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
 def analyze(percentage, tresholds, out = False, bonus = None):
 	spark_context = SparkContext.getOrCreate()
@@ -120,7 +116,7 @@ def analyze(percentage, tresholds, out = False, bonus = None):
 def collegeScore(player, score):
 	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	college = ast.literal_eval(redisc.get(player))['college']
-	return (college, score)
+	return (college, (score,1))
 
 """ parallelizzare, i worker possono chiedere i dati a redis senza passare per il master """
 def collegeAnalysis(percentage, tresholds, bonus = None, category=""):
@@ -132,7 +128,7 @@ def collegeAnalysis(percentage, tresholds, bonus = None, category=""):
 		with open('res_' + category + '.tsv') as playerFile:
 			player2Score = csv.reader(playerFile, delimiter='\t')
 
-	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda score1, score2: score1+score2).collect()
+	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
 	util.pretty_print(college2score)
 
 """
