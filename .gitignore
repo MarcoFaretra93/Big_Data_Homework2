@@ -4,3 +4,7 @@
 *.pyc
 .DS_Store
 html_pages/
+mongo-hadoop/
+build/
+dist/
+pymongo_spark.egg-info/

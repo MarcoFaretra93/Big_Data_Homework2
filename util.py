@@ -3,7 +3,11 @@ import pymongo
 import redis
 import numpy as np
 import constants
+from pyspark import SparkContext
+from pyspark.mllib.stat import Statistics
 
+
+sc = sc = SparkContext.getOrCreate()
 
 mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
 db = mongoClient['basketball_reference']

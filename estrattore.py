@@ -19,6 +19,16 @@ XPATH_PLAYERS_LAST_SEASON = "//td[@data-stat='year_max']/text()"
 
 MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
 
+with open('player.csv') as p:
+	reader = csv.reader(p, delimiter='\t')
+	p_content = [x for x in reader]
+
+with open('stats.tsv') as s:
+	reader = csv.reader(s, delimiter='\t')
+	s_content = [x for x in reader]
+
+
+
 client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = client['basketball_reference']
 redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -147,6 +157,7 @@ def downloadPage():
 
 def insertAll():
 	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
+	counter = 1
 	with open('game_results.tsv', 'rb') as games:
 		reader = csv.reader(games, delimiter = '\t', )
 		reader.next() #skip header
@@ -207,7 +218,7 @@ def insertAll():
 				season_games['all'] = all_stats
 				json_seasons[curr_season] = season_games
 
-				final_obj = {'seasons' : json_seasons, 'player_id': curr_player, 'college': collAndState['college'], 'state': collAndState['state']}
+				final_obj = {'seasons' : json_seasons, 'player_id': curr_player, 'college': collAndState['college'], 'state': collAndState['state'], 'number' : counter}
 				json_seasons = {}
 				season_games = {}
 				all_game_score = 0
@@ -216,6 +227,7 @@ def insertAll():
 				print player_id
 				curr_season = season
 				curr_player = player_id
+				counter += 1
 
 			if curr_season != season:
 				all_stats = insertSeasonStats(curr_season, curr_player)
@@ -254,48 +266,52 @@ def insertAll():
 
 def getCollegeAndState(player_id):
 	result = {}
+	"""
 	with open('player.csv', 'rb') as players:
 		reader = csv.reader(players, delimiter = '\t', )
 		reader.next() #skip header
-		for line in reader:
-			if(line[0] == player_id):
-				result['college'] = line[2]
-				result['state'] = line[3]
-				return result
+		for line in reader:"""
+	for line in p_content:
+		if(line[0] == player_id):
+			result['college'] = line[2]
+			result['state'] = line[3]
+			return result
 
 def insertSeasonStats(season, player):
 	result = {}
+	"""
 	with open('stats.tsv', 'rb') as statistiche: 
 		reader = csv.reader(statistiche, delimiter = '\t', )
 		reader.next() #skip header
-
 		for line in reader:
-			if(line[0] == player and line[1] == season):
-				result['games_played'] = line[2] if line[2] else '0'
-				result['played_minutes'] = line[3] if line[3] else '0'
-				result['field_goals'] = line[4]  if line[4] else '0'
-				result['field_goals_attempted'] = line[5] if line[5] else '0'
-				result['field_goals_percentage'] = line[6] if line[6] else '0'
-				result['three_field_goals'] = line[7] if line[7] else '0'
-				result['three_field_goals_attempted'] = line[8] if line[8] else '0'
-				result['three_field_goals_percentage'] = line[9] if line[9] else '0'
-				result['2_field_goals'] = line[10] if line[10] else '0'
-				result['2_field_goals_attempted'] = line[11] if line[11] else '0'
-				result['2_field_goals_percentage'] = line[12] if line[12] else '0'
-				result['effective_field_goals_percentage'] = line[13] if line[13] else '0'
-				result['free_throws'] = line[14] if line[14] else '0'
-				result['free_throws_attempted'] = line[15] if line[15] else '0'
-				result['free_throws_percentage'] = line[16] if line[16] else '0'
-				result['offensive_rebounds'] = line[17] if line[17] else '0'
-				result['defensive_rebounds'] = line[18] if line[18] else '0'
-				result['total_rebounds'] = line[19] if line[19] else '0'
-				result['assists'] = line[20] if line[20] else '0'
-				result['steals'] = line[21] if line[21] else '0'
-				result['blocks'] = line[22] if line[22] else '0'
-				result['turnovers'] = line[23] if line[23] else '0'
-				result['personal_fouls'] = line[24] if line[24] else '0'
-				result['points'] = line[25] if line[25] else '0'
-				return result
+			"""
+	for line in s_content:
+		if(line[0] == player and line[1] == season):
+			result['games_played'] = line[2] if line[2] else '0'
+			result['played_minutes'] = line[3] if line[3] else '0'
+			result['field_goals'] = line[4]  if line[4] else '0'
+			result['field_goals_attempted'] = line[5] if line[5] else '0'
+			result['field_goals_percentage'] = line[6] if line[6] else '0'
+			result['three_field_goals'] = line[7] if line[7] else '0'
+			result['three_field_goals_attempted'] = line[8] if line[8] else '0'
+			result['three_field_goals_percentage'] = line[9] if line[9] else '0'
+			result['2_field_goals'] = line[10] if line[10] else '0'
+			result['2_field_goals_attempted'] = line[11] if line[11] else '0'
+			result['2_field_goals_percentage'] = line[12] if line[12] else '0'
+			result['effective_field_goals_percentage'] = line[13] if line[13] else '0'
+			result['free_throws'] = line[14] if line[14] else '0'
+			result['free_throws_attempted'] = line[15] if line[15] else '0'
+			result['free_throws_percentage'] = line[16] if line[16] else '0'
+			result['offensive_rebounds'] = line[17] if line[17] else '0'
+			result['defensive_rebounds'] = line[18] if line[18] else '0'
+			result['total_rebounds'] = line[19] if line[19] else '0'
+			result['assists'] = line[20] if line[20] else '0'
+			result['steals'] = line[21] if line[21] else '0'
+			result['blocks'] = line[22] if line[22] else '0'
+			result['turnovers'] = line[23] if line[23] else '0'
+			result['personal_fouls'] = line[24] if line[24] else '0'
+			result['points'] = line[25] if line[25] else '0'
+			return result
 			
 def insertIntoRedisFromMongo():
 	players = db.basketball_reference.find({},{'_id': False})

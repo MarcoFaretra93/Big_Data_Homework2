@@ -1,4 +1,3 @@
-import pymongo
 import util
 import redis
 import ast
@@ -13,17 +12,14 @@ LETTERS = list(string.ascii_lowercase)
 
 sc = SparkContext.getOrCreate()
 
-mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
-db = mongoClient['basketball_reference']
 redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 
 
 """ values = [(field_name, operator, modifier)] """
-def checkTreshold(season, op, values, player):
+def checkTreshold(season, op, values, player, redisclient):
 	sc = SparkContext.getOrCreate()
-	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
-	valuesList = redisClient.get(season + '.' + op)
-	header = redisClient.get('0000-0000').split(',')
+	valuesList = redisclient.get(season + '.' + op)
+	header = redisclient.get('0000-0000').split(',')
 	check = True
 	valuesList = ast.literal_eval(valuesList)
 	for element in values:
@@ -40,11 +36,10 @@ def checkTreshold(season, op, values, player):
 	return check
 
 """ scorefinale += scoreAnnuale * percent*(valore - mediaValore) """
-def getBonus(bonus, season, stats):
+def getBonus(bonus, season, stats, redisclient):
 	sc = SparkContext.getOrCreate()
-	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
-	meanStats = redisClient.get(season + '.mean')
-	header = redisClient.get('0000-0000').split(',')
+	meanStats = redisclient.get(season + '.mean')
+	header = redisclient.get('0000-0000').split(',')
 	meanStats = ast.literal_eval(meanStats)
 	bonus_name = bonus[0]
 	bonus_value = bonus[1]
@@ -57,6 +52,7 @@ def getBonus(bonus, season, stats):
 
 """ calcolare anche bonus """
 def score4Player(player, percentage, tresholds, bonus = None):
+	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	totalScore = 0
 	count = 0
 	try: 
@@ -65,14 +61,14 @@ def score4Player(player, percentage, tresholds, bonus = None):
 		for i in range(4):
 			annualScore = 0
 			allParameters = player['seasons'][season]['all']
-			if(checkTreshold(season, 'mean', tresholds, player)):
+			if(checkTreshold(season, 'mean', tresholds, player, redisClient)):
 				count += 1 
 				for percentageKeys in percentage.keys():
 					annualScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
 					totalScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
 			if bonus != None:
 				for b in bonus:
-					totalScore += annualScore * getBonus(b, season, allParameters)
+					totalScore += annualScore * getBonus(b, season, allParameters, redisClient)
 			season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
 	except KeyError:
 		pass
@@ -80,19 +76,41 @@ def score4Player(player, percentage, tresholds, bonus = None):
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
+def splitRedisRecord(limit, spark_context):
+	parallel_players = []
+	player_list = []
+	if limit == 0:
+		for letter in LETTERS:
+			for key in redisc.scan_iter(letter + '*'):
+				player_list.append(ast.literal_eval(redisc.get(key)))
+			parallel_players.append(spark_context.parallelize(player_list))
+			player_list = []
+	else:
+		for key in redisc.scan_iter():
+			player_list.append(ast.literal_eval(redisc.get(key)))
+			if len(player_list) == limit:
+				parallel_players.append(spark_context.parallelize(player_list))
+				player_list = []
+		if len(player_list) != 0:
+			parallel_players.append(spark_context.parallelize(player_list))
+	return spark_context.union(parallel_players)
+
+
+
+
+
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
 def analyze(percentage, tresholds, out = False, bonus = None):
 	spark_context = SparkContext.getOrCreate()
-	"""player_list = []
 	parallel_players = []
-	for letter in LETTERS:
-		for key in redisc.scan_iter(letter + '*'):
-			player_list.append(ast.literal_eval(redisc.get(key)))
-		parallel_players.append(spark_context.parallelize(player_list))
-		player_list = []
-	parallel_players = spark_context.union(parallel_players)"""
-	players = db.basketball_reference.find()
-	parallel_players = spark_context.parallelize([p for p in players])
+	if spark_context.getConf().get("provider") == 'mongo':
+		#players = db.basketball_reference.find()
+		#parallel_players = spark_context.parallelize([p for p in players])
+		parallel_players = spark_context.mongoRDD(constants.MONGO_CONNECTION + 'basketball_reference.basketball_reference')
+	if spark_context.getConf().get("provider") == 'redis':
+		limit = spark_context.getConf().get('limit')
+		parallel_players = splitRedisRecord(limit, spark_context)
+		
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus))
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
