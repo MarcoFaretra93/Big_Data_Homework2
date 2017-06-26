@@ -1,2 +1,7 @@
-attackers-college 265s
-shooters-2-college 265s
+attackers-college 100 25s
+attackers-college 500 56s
+attackers-college 1000 90s
+attackers-college 2000 144s
+attackers-college all 265s
+attackers-college double-all 420s
+attackers-college triple-all 845s
