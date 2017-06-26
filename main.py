@@ -1,3 +1,5 @@
+import time
+start_time = time.time()
 from pyspark import SparkContext, SparkConf
 from pyspark.mllib.stat import Statistics
 import pymongo_spark
@@ -87,3 +89,5 @@ else:
 	scoring.analyze(percentage, tresholds, bonus = bonus, out=True)
 
 sc.stop()
+print("--- %s seconds ---" % (time.time() - start_time))
+
