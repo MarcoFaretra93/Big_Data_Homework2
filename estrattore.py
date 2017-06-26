@@ -157,7 +157,7 @@ def downloadPage():
 
 def insertAll():
 	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
-	counter = 1
+	counter = 0
 	with open('game_results.tsv', 'rb') as games:
 		reader = csv.reader(games, delimiter = '\t', )
 		reader.next() #skip header
@@ -167,6 +167,7 @@ def insertAll():
 		season_games = {}
 		all_game_score = 0
 		all_plus_minus = 0
+		count = 1
 		for line in reader:
 			player_id = line[0] if line[0] else '0'
 			season = line[1] if line[1] else '0'
@@ -204,6 +205,7 @@ def insertAll():
 				curr_season = season
 
 			if(curr_player != player_id):
+				count += 1
 				collAndState = getCollegeAndState(curr_player)
 
 				all_stats = insertSeasonStats(curr_season, curr_player)
@@ -261,6 +263,8 @@ def insertAll():
 				all_plus_minus += float(plus_minus)
 			except ValueError:
 				pass
+			if limit == count:
+				break
 		result = basketball_reference.execute()
 		print result
 
@@ -325,7 +329,7 @@ if __name__ == '__main__':
 		if sys.argv[2] == "delete":
 			db.basketball_reference.drop()
 			redisClient.flushall()
-		insertAll()
+		insertAll(sys.argv[3])
 		insertIntoRedisFromMongo()
 
 
