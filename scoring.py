@@ -51,8 +51,6 @@ def getBonus(bonus, season, stats, redisclient):
 	else:
 		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
 
-def prova(player):
-	return (player['player_id'], 1)
 
 def score4Player(player, percentage, tresholds, bonus = None, normalizer = False):
 	return (player['player_id'], 1)
@@ -84,6 +82,9 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 	finalScore = totalScore * 100
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)"""
+
+def prova(player):
+	return (player['player_id'], 1)
 
 def splitRedisRecord(limit, spark_context):
 	parallel_players = []
@@ -131,7 +132,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
-	scores = parallel_players.map(lambda player: prova(player))
+	scores = parallel_players.map(prova)#lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
