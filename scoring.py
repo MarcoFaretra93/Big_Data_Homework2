@@ -11,7 +11,7 @@ from pyspark import SparkContext
 
 LETTERS = list(string.ascii_lowercase)
 
-#sc = SparkContext.getOrCreate()
+sc = SparkContext.getOrCreate()
 
 #redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 
@@ -83,7 +83,7 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
-def splitRedisRecord(sc, limit, spark_context):
+def splitRedisRecord(limit, spark_context):
 	redisclient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 	parallel_players = []
 	player_list = []
@@ -119,7 +119,6 @@ def splitMongoRecord(limit, spark_context):
 		parallel_players = spark_context.union(player_list)
 	return parallel_players
 
-"""Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
 def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = False):
 	spark_context = sc #SparkContext.getOrCreate()
 	parallel_players = []
@@ -129,7 +128,7 @@ def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = F
 		parallel_players = spark_context.mongoRDD('mongodb://' + spark_context.getConf().get('mongo_host') + ':27017/basketball_reference.basketball_reference')
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
-		parallel_players = splitRedisRecord(sc,limit, spark_context)
+		parallel_players = splitRedisRecord(limit, spark_context)
 	#scorer = Scorer(percentage, tresholds, bonus, normalizer)
 	#scores = scorer.startScoring(parallel_players)
 	f = lambda player: score4Player(player, percentage, tresholds, bonus, normalizer)	
@@ -139,9 +138,9 @@ def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = F
 	else:
 		return scores
 
-def collegeScore(sc, player, score):
-	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
-	college = ast.literal_eval(rediscClient.get(player))['college']
+def collegeScore(player, score):
+	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
+	college = ast.literal_eval(redisClient.get(player))['college']
 	return (college, (score,1))
 
 """ parallelizzare, i worker possono chiedere i dati a redis senza passare per il master """
@@ -154,7 +153,7 @@ def collegeAnalysis(sc, percentage, tresholds, bonus = None, category="", normal
 		with open('res_' + category + '.tsv') as playerFile:
 			player2Score = csv.reader(playerFile, delimiter='\t')
 
-	college2score = player2Score.map(lambda (player, score): collegeScore(sc, player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
+	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
 	util.pretty_print(util.normalize_scores_college(100, college2score))
 
 """
