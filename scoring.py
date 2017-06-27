@@ -17,7 +17,8 @@ redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379,
 
 
 """ values = [(field_name, operator, modifier)] """
-def checkTreshold(season, op, values, player, redisclient):
+def checkTreshold(season, op, values, player, redisclient = None):
+	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	sc = SparkContext.getOrCreate()
 	valuesList = redisclient.get(season + '.' + op)
 	header = redisclient.get('0000-0000').split(',')
@@ -52,7 +53,6 @@ def getBonus(bonus, season, stats, redisclient):
 		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
 
 def score4Player(player, percentage, tresholds, bonus = None, normalizer = False):
-	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	totalScore = 0
 	count = 0
 	try: 
@@ -61,7 +61,7 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 		for i in range(4):
 			annualScore = 0
 			allParameters = player['seasons'][season]['all']
-			if(checkTreshold(season, 'mean', tresholds, player, redisClient)):
+			if(checkTreshold(season, 'mean', tresholds, player)):
 				count += 1 
 				for percentageKey in percentage.keys():
 					if normalizer:
