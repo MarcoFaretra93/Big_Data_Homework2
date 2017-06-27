@@ -133,7 +133,7 @@ def collegeAnalysis(percentage, tresholds, bonus = None, category="", normalizer
 			player2Score = csv.reader(playerFile, delimiter='\t')
 
 	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
-	util.pretty_print(util.normalize_scores(100, college2score))
+	util.pretty_print(util.normalize_scores_college(100, college2score))
 
 """
 	toBeParallelized = []
