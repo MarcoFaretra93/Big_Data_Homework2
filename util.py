@@ -92,8 +92,6 @@ def calculateStats(years2stats, op):
 def insertIntoRedis(dictionary, op):
 	for key in dictionary:
 		dictionary[key] = map(lambda s : s.strip(), dictionary[key])
-		print(constants.REDIS_CONNECTION)
-		print(redisClient)
 		redisClient.set(key + '.' + op, dictionary[key])
 	redisClient.set("0000-0000", "three_field_goals_percentage,free_throws_attempted,2_field_goals_attempted,three_field_goals,field_goals_percentage,games_played,game_score,offensive_rebounds,three_field_goals_attempted,free_throws_percentage,blocks,effective_field_goals_percentage,2_field_goals,total_rebounds,2_field_goals_percentage,steals,turnovers,plus_minus,played_minutes,field_goals,free_throws,defensive_rebounds,points,personal_fouls,assists,field_goals_attempted")
 
