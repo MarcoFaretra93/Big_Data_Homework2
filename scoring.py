@@ -152,7 +152,7 @@ def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = F
 	#scorer = Scorer(percentage, tresholds, bonus, normalizer)
 	#scores = scorer.startScoring(parallel_players)
 	f = lambda player: score4Player(player, percentage, tresholds, bonus, normalizer)	
-	scores = parallel_players.map(f)
+	scores = parallel_players.map(util.test)
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
