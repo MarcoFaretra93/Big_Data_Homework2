@@ -37,7 +37,8 @@ conf.set('mongo_host', args.master_ip)
 sc = SparkContext.getOrCreate(conf)
 
 import util
-import scoring
+from scoring import MyClass
+import scoring 
 
 if args.distributed:
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/scoring.py')
@@ -91,7 +92,7 @@ elif args.action == "all_around":
 if args.college and args.action != 'populate':
 	scoring.collegeAnalysis(percentage, tresholds, bonus = bonus)
 elif args.action != 'populate':
-	scoring.analyze(percentage, tresholds, bonus = bonus, out=True)
+	MyClass.analyze(percentage, tresholds, bonus = bonus, out=True)
 
 sc.stop()
 print("--- %s seconds ---" % (time.time() - start_time))
