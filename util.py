@@ -29,6 +29,7 @@ def pretty_print(couples):
 	map(lambda x: print('\t'.join([str(y) for y in flatten(x)])), couples)
 
 def normalize_scores(max_value, scores):
+	print "ciao"
 	max_score = max([x for (y,x) in scores])
 	return map(lambda (x,y): (x,y*max_value/max_score), scores)
 

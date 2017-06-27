@@ -128,9 +128,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
-	print "prima"
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
-	print "dopo"
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
