@@ -52,7 +52,7 @@ def getBonus(bonus, season, stats, redisclient):
 		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
 
 def score4Player(player, percentage, tresholds, bonus = None, normalizer = False):
-	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
+	"""redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	totalScore = 0
 	count = 0
 	try: 
@@ -79,7 +79,8 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 		pass
 	finalScore = totalScore * 100
 	count = count if count != 0 else 1
-	return (player['player_id'], finalScore/count)
+	return (player['player_id'], finalScore/count)"""
+	return ("ciao",1)
 
 def splitRedisRecord(limit, spark_context):
 	parallel_players = []
@@ -111,7 +112,6 @@ def splitMongoRecord(limit, spark_context):
 		count = db.basketball_reference.count()
 		counter = -1
 		while counter < count:
-			print counter 
 			player_list.append(spark_context.parallelize(db.basketball_reference.find({ 'number' : { '$gt': counter, '$lt' : int(counter) + int(limit) } })))
 			counter = int(counter) + int(limit)
 		parallel_players = spark_context.union(player_list)
@@ -130,8 +130,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 		parallel_players = splitRedisRecord(limit, spark_context)
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
-		resultCollect = scores.collect()
-		util.pretty_print(util.normalize_scores(100,resultCollect))
+		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
 		return scores
 
