@@ -6,6 +6,7 @@ import csv
 import redis
 import string
 import constants
+import pymongo
 from pyspark import SparkContext
 
 LETTERS = list(string.ascii_lowercase)
@@ -99,6 +100,23 @@ def splitRedisRecord(limit, spark_context):
 			parallel_players.append(spark_context.parallelize(player_list))
 	return spark_context.union(parallel_players)
 
+def splitMongoRecord(limit, spark_context):
+	parallel_players = []
+	player_list = []
+	mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
+	db = mongoClient['basketball_reference']
+	if limit == 0:
+		parallel_players = spark_context.parallelize([x for x in db.basketball_reference.find()])
+	else:
+		count = db.basketball_reference.count()
+		counter = -1
+		while counter < count:
+			print counter 
+			player_list.append(spark_context.parallelize(db.basketball_reference.find({ 'number' : { '$gt': counter, '$lt' : int(counter) + int(limit) } })))
+			counter = int(counter) + int(limit)
+		parallel_players = spark_context.union(player_list)
+	return parallel_players
+
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
 def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False):
 	spark_context = SparkContext.getOrCreate()
@@ -106,7 +124,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if spark_context.getConf().get("provider") == 'mongo':
 		#players = db.basketball_reference.find()
 		#parallel_players = spark_context.parallelize([p for p in players])
-		parallel_players = spark_context.mongoRDD('mongodb://' + spark_context._conf.get('mongo_host') + ':27017/basketball_reference.basketball_reference')
+		parallel_players = splitMongoRecord(spark_context._conf.get('limit'), spark_context)#spark_context.mongoRDD('mongodb://' + spark_context._conf.get('mongo_host') + ':27017/basketball_reference.basketball_reference')
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
