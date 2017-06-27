@@ -52,7 +52,6 @@ def getBonus(bonus, season, stats, redisclient):
 		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
 
 def score4Player(player, percentage, tresholds, bonus = None, normalizer = False):
-	print "fase 1"
 	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	totalScore = 0
 	count = 0
@@ -63,7 +62,6 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 			annualScore = 0
 			allParameters = player['seasons'][season]['all']
 			if(checkTreshold(season, 'mean', tresholds, player, redisClient)):
-				print "fase 2"
 				count += 1 
 				for percentageKey in percentage.keys():
 					if normalizer:
@@ -73,12 +71,10 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 					else:
 						annualScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
 						totalScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
-				print "fase 3"
 			if bonus != None:
 				for b in bonus:
 					totalScore += annualScore * getBonus(b, season, allParameters, redisClient)
 			season = str(int(season.split('-')[0])+1) + '-' + str(int(season.split('-')[1])+1)
-			print "fase 4"
 	except KeyError:
 		pass
 	finalScore = totalScore * 100
@@ -132,8 +128,9 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
-		
+	print "prima"
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
+	print "dopo"
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
