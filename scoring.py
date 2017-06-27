@@ -106,7 +106,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if spark_context.getConf().get("provider") == 'mongo':
 		#players = db.basketball_reference.find()
 		#parallel_players = spark_context.parallelize([p for p in players])
-		parallel_players = spark_context.mongoRDD('mongodb://' + spark_context._sc('mongo_host') + ':27017/basketball_reference.basketball_reference')
+		parallel_players = spark_context.mongoRDD('mongodb://' + spark_context._conf.get('mongo_host') + ':27017/basketball_reference.basketball_reference')
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
