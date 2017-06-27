@@ -137,8 +137,8 @@ def splitMongoRecord(limit, spark_context):
 	return parallel_players
 
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
-def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False):
-	spark_context = SparkContext.getOrCreate()
+def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = False):
+	spark_context = sc #SparkContext.getOrCreate()
 	parallel_players = []
 	if spark_context.getConf().get("provider") == 'mongo':
 		#players = db.basketball_reference.find()
@@ -161,8 +161,8 @@ def collegeScore(player, score):
 	return (college, (score,1))
 
 """ parallelizzare, i worker possono chiedere i dati a redis senza passare per il master """
-def collegeAnalysis(percentage, tresholds, bonus = None, category="", normalizer = False):
-	spark_context = SparkContext.getOrCreate()
+def collegeAnalysis(sc, percentage, tresholds, bonus = None, category="", normalizer = False):
+	spark_context = sc #SparkContext.getOrCreate()
 	player2Score = []
 	if not os.path.isfile('res_' + category + '.tsv'):
 		player2Score = analyze(percentage, tresholds, bonus = bonus, normalizer = normalizer)

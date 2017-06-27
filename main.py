@@ -88,9 +88,9 @@ elif args.action == "all_around":
 	tresholds = constants.all_around_tresholds
 
 if args.college and args.action != 'populate':
-	scoring.collegeAnalysis(percentage, tresholds, bonus = bonus)
+	scoring.collegeAnalysis(sc, percentage, tresholds, bonus = bonus)
 elif args.action != 'populate':
-	scoring.analyze(percentage, tresholds, bonus = bonus, out=True)
+	scoring.analyze(sc, percentage, tresholds, bonus = bonus, out=True)
 
 sc.stop()
 print("--- %s seconds ---" % (time.time() - start_time))
