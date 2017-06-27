@@ -135,6 +135,9 @@ def splitMongoRecord(limit, spark_context):
 		parallel_players = spark_context.union(player_list)
 	return parallel_players
 
+def test(player):
+	return (player['player_id'],1)
+
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
 def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = False):
 	spark_context = sc #SparkContext.getOrCreate()
