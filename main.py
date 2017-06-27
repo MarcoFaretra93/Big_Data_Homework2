@@ -31,7 +31,14 @@ conf.set('redis_connection', args.master_ip)
 conf.set('provider', args.data_provider)
 conf.set('limit', args.limit)
 
+
+
 sc = SparkContext.getOrCreate(conf)
+
+print args.master_ip
+print args.data_provider
+print sc._conf.get('provider')
+print sc._conf.get('redis_connection')
 
 
 import util
