@@ -8,10 +8,6 @@ import argparse
 import sys
 import constants
 
-def func(n):
-	return n+1
-
-
 conf = SparkConf()
 conf.setAppName('NBA analysis')
 #conf.set("spark.eventlog.enabled", True)
@@ -73,7 +69,6 @@ elif args.action == "3_point_shooters":
 elif args.action == "attackers":
 	percentage = constants.att_percentage
 	tresholds = constants.att_tresholds
-	print sc.parallelize([1,2,3,4]).map(func).collect()
 
 elif args.action == "defenders":
 	percentage = constants.def_percentage

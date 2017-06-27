@@ -15,6 +15,9 @@ sc = SparkContext.getOrCreate()
 
 redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 
+def func(n):
+	return n+1
+
 """ values = [(field_name, operator, modifier)] """
 def checkTreshold(season, op, values, player, redisclient):
 	sc = SparkContext.getOrCreate()
@@ -127,6 +130,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
+	print spark_context.parallelize([1,2,3,4]).map(func).collect()
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
