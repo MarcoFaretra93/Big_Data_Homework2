@@ -50,8 +50,7 @@ def getBonus(bonus, season, stats, redisclient):
 	else:
 		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
 
-""" calcolare anche bonus """
-def score4Player(player, percentage, tresholds, bonus = None):
+def score4Player(player, percentage, tresholds, bonus = None, normalizer = False):
 	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 	totalScore = 0
 	count = 0
@@ -63,9 +62,14 @@ def score4Player(player, percentage, tresholds, bonus = None):
 			allParameters = player['seasons'][season]['all']
 			if(checkTreshold(season, 'mean', tresholds, player, redisClient)):
 				count += 1 
-				for percentageKeys in percentage.keys():
-					annualScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
-					totalScore += float(allParameters[percentageKeys]) * float(percentage[percentageKeys])
+				for percentageKey in percentage.keys():
+					if normalizer:
+						normalizeValue = util.normalize(allParameters[percentageKey], percentageKey, season)
+						annualScore += float(normalizeValue) * float(percentage[percentageKey])
+						totalScore += float(normalizeValue) * float(percentage[percentageKey])
+					else:
+						annualScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
+						totalScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
 			if bonus != None:
 				for b in bonus:
 					totalScore += annualScore * getBonus(b, season, allParameters, redisClient)
@@ -96,7 +100,7 @@ def splitRedisRecord(limit, spark_context):
 	return spark_context.union(parallel_players)
 
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
-def analyze(percentage, tresholds, out = False, bonus = None):
+def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False):
 	spark_context = SparkContext.getOrCreate()
 	parallel_players = []
 	if spark_context.getConf().get("provider") == 'mongo':
@@ -107,7 +111,7 @@ def analyze(percentage, tresholds, out = False, bonus = None):
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
 		
-	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus))
+	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
@@ -119,17 +123,17 @@ def collegeScore(player, score):
 	return (college, (score,1))
 
 """ parallelizzare, i worker possono chiedere i dati a redis senza passare per il master """
-def collegeAnalysis(percentage, tresholds, bonus = None, category=""):
+def collegeAnalysis(percentage, tresholds, bonus = None, category="", normalizer = False):
 	spark_context = SparkContext.getOrCreate()
 	player2Score = []
 	if not os.path.isfile('res_' + category + '.tsv'):
-		player2Score = analyze(percentage, tresholds, bonus = bonus)
+		player2Score = analyze(percentage, tresholds, bonus = bonus, normalizer = normalizer)
 	else:
 		with open('res_' + category + '.tsv') as playerFile:
 			player2Score = csv.reader(playerFile, delimiter='\t')
 
 	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
-	util.pretty_print(college2score)
+	util.pretty_print(util.normalize_scores(100, college2score))
 
 """
 	toBeParallelized = []

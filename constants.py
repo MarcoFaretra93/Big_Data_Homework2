@@ -19,5 +19,8 @@ reb_tresholds = [('played_minutes', '>=', '0.5'),('games_played', '>=')]
 pm_percentage = {'plus_minus' : 1}
 pm_tresholds = [('played_minutes', '>=', '0.5'),('games_played', '>=')]
 
+all_around_tresholds = [('played_minutes', '>=', '0.5'),('games_played', '>=')]
+all_around_percentage = {'effective_field_goals_percentage' : 0.25, 'free_throws_percentage' : 0.25, 'total_rebounds' : 0.17, 'blocks' : 0.16, 'steals': 0.17}
+
 def setRedisConnectionAddress(address):
 	REDIS_CONNECTION = address

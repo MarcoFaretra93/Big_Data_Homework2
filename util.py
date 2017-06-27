@@ -4,6 +4,7 @@ import redis
 import numpy as np
 import constants
 import types
+import ast
 from pyspark import SparkContext
 from pyspark.mllib.stat import Statistics
 
@@ -28,6 +29,13 @@ def pretty_print(couples):
 def normalize_scores(max_value, scores):
 	max_score = max([x for (y,x) in scores])
 	return map(lambda (x,y): (x,y*max_value/max_score), scores)
+
+def normalize(parameter, key, season):
+	field_names = redisClient.get('0000-0000').split(',')
+	maxValue = ast.literal_eval(redisClient.get(season + '.max'))
+	minValue = ast.literal_eval(redisClient.get(season + '.min'))
+	index = field_names.index(key)
+	return (float(parameter) - float(minValue[index]))/(float(maxValue[index]) - float(minValue[index]))
 
 """ legge da mongo e torna un dizionario {stagione : all_statistica di quell'anno per tutti i giocatori} """
 def mongoRead():
@@ -60,6 +68,18 @@ def calculateStats(years2stats, op):
 			for singleElement in variances:
 				valuesList.append(str(singleElement).rstrip())
 			result[year] = valuesList
+		if op == 'max':
+			maxValue = summary.max()
+			valuesList = []
+			for singleElement in maxValue:
+				valuesList.append(str(singleElement).rstrip())
+			result[year] = valuesList
+		if op == 'min':
+			minValue = summary.min()
+			valuesList = []
+			for singleElement in minValue:
+				valuesList.append(str(singleElement).rstrip())
+			result[year] = valuesList
 	return result
 
 """ prende il risultato di calculateStats e lo inserisce dentro redis """
@@ -77,4 +97,6 @@ def getAndInsertAllStatsByType(op):
 def populate():
 	getAndInsertAllStatsByType('mean')
 	getAndInsertAllStatsByType('variance')
+	getAndInsertAllStatsByType('max')
+	getAndInsertAllStatsByType('min')
 

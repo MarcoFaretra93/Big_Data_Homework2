@@ -15,7 +15,7 @@ conf.set("spark.eventlog.enabled", True)
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("action", help="the action that needs to be invoked", choices=["populate", "2_point_shooters", "3_point_shooters","attackers","defenders","rebounders","plus_minus"])
+parser.add_argument("action", help="the action that needs to be invoked", choices=["populate", "2_point_shooters", "3_point_shooters","attackers","defenders","rebounders","plus_minus", "all_around"])
 parser.add_argument("-ip", "--master-ip", help="ip address of the driver/master, could be a name resolvable with DNS")
 parser.add_argument("-dist", "--distributed", action="store_true", help="switch to cluster mode")
 parser.add_argument("-c", "--college", action="store_true", help="switch to college analysis for category 'action'")
@@ -81,6 +81,10 @@ elif args.action == "rebounders":
 elif args.action == "plus_minus":
 	percentage = constants.pm_percentage
 	tresholds = constants.pm_tresholds
+
+elif args.action == "all_around":
+	percentage = constants.all_around_percentage
+	tresholds = constants.all_around_tresholds
 
 if args.college and args.action != 'populate':
 	scoring.collegeAnalysis(percentage, tresholds, bonus = bonus)
