@@ -32,6 +32,10 @@ def normalize_scores(max_value, scores):
 	max_score = max([x for (y,x) in scores])
 	return map(lambda (x,y): (x,y*max_value/max_score), scores)
 
+def normalize_scores_college(max_value, scores):
+	max_score = max([x for (y,(x,z)) in scores])
+	return map(lambda (x,(y,z)): (x,(y*max_value/max_score, z)), scores)
+
 def normalize(parameter, key, season):
 	field_names = redisClient.get('0000-0000').split(',')
 	maxValue = ast.literal_eval(redisClient.get(season + '.max'))
