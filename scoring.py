@@ -149,7 +149,6 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 		parallel_players = splitRedisRecord(limit, spark_context)
 	scorer = Scorer(percentage, tresholds, bonus, normalizer)
 	scores = scorer.startScoring(parallel_players)
-	print scores
 	#scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
