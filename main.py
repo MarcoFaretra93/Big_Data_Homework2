@@ -40,11 +40,11 @@ import scoring
 if args.distributed:
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/scoring.py')
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/util.py')
-	sc.addPyFile('/home/hadoop/Big_Data_Homework2/lxml.zip')
-	sc.addPyFile('/home/hadoop/Big_Data_Homework2/pymongo.zip')
-	sc.addPyFile('/home/hadoop/Big_Data_Homework2/redis.zip')
-	sc.addPyFile('/home/hadoop/Big_Data_Homework2/wget.py')
-	sc.addPyFile('/home/hadoop/Big_Data_Homework2/bson.zip')
+	sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/lxml.zip')
+	sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/pymongo.zip')
+	sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/redis.zip')
+	sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/wget.py')
+	sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/bson.zip')
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/constants.py')
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/mongo-hadoop/spark/src/main/python/pymongo_spark.py')
 
