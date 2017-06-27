@@ -11,11 +11,11 @@ from pyspark import SparkContext
 from pyspark.mllib.stat import Statistics
 
 
-sc = sc = SparkContext.getOrCreate()
+sc = SparkContext.getOrCreate()
 
 mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
 db = mongoClient['basketball_reference']
-redisClient = redis.StrictRedis(host=constants.REDIS_CONNECTION, port=6379, db=1)
+redisClient = redis.StrictRedis(host=sc._conf.get('redis_connection'), port=6379, db=1)
 
 def isTuple(x): return type(x) == types.TupleType
 
