@@ -17,9 +17,6 @@ mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
 db = mongoClient['basketball_reference']
 redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=1)
 
-def test(player):
-	return ("ciao",1)
-
 def isTuple(x): return type(x) == types.TupleType
 
 def flatten(T):

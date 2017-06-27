@@ -14,14 +14,6 @@ LETTERS = list(string.ascii_lowercase)
 #sc = SparkContext.getOrCreate()
 
 #redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
-"""
-class Scorer(object):
-
-	def __init__(self, percentage, tresholds, bonus = None, normalizer = False):
-		self.percentage = percentage
-		self.tresholds = tresholds
-		self.bonus = bonus
-		self.normalizer = normalizer"""
 
 """ values = [(field_name, operator, modifier)] """
 def checkTreshold(season, op, values, player):
@@ -91,14 +83,6 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
-"""
-def func(self, player):
-	return self.score4Player(player)
-
-def startScoring(self, rdd):
-		return rdd.map(self.func)
-"""
-
 def splitRedisRecord(sc, limit, spark_context):
 	redisclient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 	parallel_players = []
@@ -135,9 +119,6 @@ def splitMongoRecord(limit, spark_context):
 		parallel_players = spark_context.union(player_list)
 	return parallel_players
 
-def test(player):
-	return (player['player_id'],1)
-
 """Testare la configurazione con REDIS cbe fornisce i dati al posto di mongo, 208job ma alto livello di parallelizzazione"""
 def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = False):
 	spark_context = sc #SparkContext.getOrCreate()
@@ -152,8 +133,7 @@ def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = F
 	#scorer = Scorer(percentage, tresholds, bonus, normalizer)
 	#scores = scorer.startScoring(parallel_players)
 	f = lambda player: score4Player(player, percentage, tresholds, bonus, normalizer)	
-	parallel_players.coalesce(8,True)
-	scores = parallel_players.map(util.test)
+	scores = parallel_players.map(f)
 	if out:
 		util.pretty_print(util.normalize_scores(100,scores.collect()))
 	else:
