@@ -112,6 +112,11 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	else:
 		return scores
 
+def collegeScore(player, score):
+	redisClient = redis.StrictRedis(host='ec2-34-209-195-193.us-west-2.compute.amazonaws.com', port=6379, db=0)
+	college = ast.literal_eval(redisClient.get(player))['college']
+	return (college, (score,1))
+
 def collegeAnalysis(percentage, tresholds, bonus = None, category="", normalizer = False):
 	player2Score = []
 
