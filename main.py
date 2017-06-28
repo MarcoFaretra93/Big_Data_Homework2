@@ -8,10 +8,9 @@ import argparse
 import sys
 import constants
 
-
 conf = SparkConf()
 conf.setAppName('NBA analysis')
-conf.set("spark.eventlog.enabled", True)
+#conf.set("spark.eventlog.enabled", True)
 
 parser = argparse.ArgumentParser()
 
@@ -31,8 +30,6 @@ conf.set('redis_connection', args.master_ip)
 conf.set('provider', args.data_provider)
 conf.set('limit', args.limit)
 conf.set('mongo_host', args.master_ip)
-
-
 
 sc = SparkContext.getOrCreate(conf)
 
@@ -89,9 +86,9 @@ elif args.action == "all_around":
 	tresholds = constants.all_around_tresholds
 
 if args.college and args.action != 'populate':
-	scoring.collegeAnalysis(percentage, tresholds, bonus = bonus)
+	scoring.collegeAnalysis(sc, percentage, tresholds, bonus = bonus)
 elif args.action != 'populate':
-	scoring.analyze(percentage, tresholds, bonus = bonus, out=True)
+	scoring.analyze(sc, percentage, tresholds, bonus = bonus, out=True)
 
 sc.stop()
 print("--- %s seconds ---" % (time.time() - start_time))
