@@ -114,11 +114,9 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 
 def collegeAnalysis(percentage, tresholds, bonus = None, category="", normalizer = False):
 	player2Score = []
-	if not os.path.isfile('res_' + category + '.tsv'):
-		player2Score = analyze(percentage, tresholds, bonus = bonus, normalizer = normalizer)
-	else:
-		with open('res_' + category + '.tsv') as playerFile:
-			player2Score = csv.reader(playerFile, delimiter='\t')
+
+	player2Score = analyze(percentage, tresholds, bonus = bonus, normalizer = normalizer)
+
 
 	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
 	print college2score
