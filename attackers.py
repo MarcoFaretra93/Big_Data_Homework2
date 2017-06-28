@@ -108,7 +108,7 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if out:
 		print scores.collect()
 	else:
-		print score.collect()
+		print scores.collect()
 		return scores
 
 
