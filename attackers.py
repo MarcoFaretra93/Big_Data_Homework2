@@ -1,3 +1,5 @@
+import time
+start_time = time.time()
 import redis 
 import ast 
 from pyspark import SparkContext, SparkConf
@@ -108,10 +110,25 @@ def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False
 	if out:
 		print scores.collect()
 	else:
-		print scores.collect()
 		return scores
 
+def collegeAnalysis(percentage, tresholds, bonus = None, category="", normalizer = False):
+	player2Score = []
+	if not os.path.isfile('res_' + category + '.tsv'):
+		player2Score = analyze(percentage, tresholds, bonus = bonus, normalizer = normalizer)
+	else:
+		with open('res_' + category + '.tsv') as playerFile:
+			player2Score = csv.reader(playerFile, delimiter='\t')
 
-analyze(att_percentage, att_tresholds)
+	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
+	print college2score
+
+
+
+collegeAnalysis(att_percentage, att_tresholds)
 
 sc.stop()
+
+print("--- %s seconds ---" % (time.time() - start_time))
+
+
