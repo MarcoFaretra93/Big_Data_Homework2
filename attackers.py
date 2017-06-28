@@ -26,7 +26,6 @@ sc.addPyFile('/home/hadoop/Big_Data_Homework2/mongo-hadoop/spark/src/main/python
 redisc = redis.StrictRedis(host='ec2-34-209-195-193.us-west-2.compute.amazonaws.com', port=6379, db=0)
 
 def checkTreshold(season, op, values, player, redisclient):
-	sc = SparkContext.getOrCreate()
 	valuesList = redisclient.get(season + '.' + op)
 	header = redisclient.get('0000-0000').split(',')
 	check = True
@@ -46,7 +45,6 @@ def checkTreshold(season, op, values, player, redisclient):
 
 """ scorefinale += scoreAnnuale * percent*(valore - mediaValore) """
 def getBonus(bonus, season, stats, redisclient):
-	sc = SparkContext.getOrCreate()
 	meanStats = redisclient.get(season + '.mean')
 	header = redisclient.get('0000-0000').split(',')
 	meanStats = ast.literal_eval(meanStats)
@@ -111,16 +109,16 @@ def splitRedisRecord(limit, spark_context):
 
 def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False):
 	parallel_players = []
-	if spark_context.getConf().get("provider") == 'mongo':
+	if sc.getConf().get("provider") == 'mongo':
 		#players = db.basketball_reference.find()
-		#parallel_players = spark_context.parallelize([p for p in players])
-		parallel_players = spark_context.mongoRDD('mongodb://ec2-34-209-195-193.us-west-2.compute.amazonaws.com:27017/basketball_reference.basketball_reference')
-	if spark_context.getConf().get("provider") == 'redis':
-		limit = spark_context.getConf().get('limit')
-		parallel_players = splitRedisRecord(limit, spark_context)
+		#parallel_players = sc.parallelize([p for p in players])
+		parallel_players = sc.mongoRDD('mongodb://ec2-34-209-195-193.us-west-2.compute.amazonaws.com:27017/basketball_reference.basketball_reference')
+	if sc.getConf().get("provider") == 'redis':
+		limit = sc.getConf().get('limit')
+		parallel_players = splitRedisRecord(limit, sc)
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
-		util.pretty_print(util.normalize_scores(100,scores.collect()))
+		print scores.collect()
 	else:
 		return scores
 
