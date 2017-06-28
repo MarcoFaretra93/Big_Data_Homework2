@@ -19,7 +19,7 @@ sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/lxml.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/pymongo.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/redis.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/wget.py')
-#sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/bson.zip')
+sc.addPyFile('/home/hadoop/Big_Data_Homework2/dependencies/bson.zip')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/constants.py')
 sc.addPyFile('/home/hadoop/Big_Data_Homework2/mongo-hadoop/spark/src/main/python/pymongo_spark.py')
 
