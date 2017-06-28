@@ -1,3 +1,5 @@
+LOCALE
+
 attackers-college 100 25s
 attackers-college 500 56s
 attackers-college 1000 90s
@@ -5,3 +7,13 @@ attackers-college 2000 144s
 attackers-college all 265s
 attackers-college double-all 420s
 attackers-college triple-all 845s
+
+CLUSTER
+
+attackers-college 100 33s
+attackers-college 500 46s
+attackers-college 1000 48s
+attackers-college 2000 52s
+attackers-college all 56s
+attackers-college double-all 63s
+attackers-college triple-all 76s
