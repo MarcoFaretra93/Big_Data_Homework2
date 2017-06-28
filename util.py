@@ -30,10 +30,18 @@ def pretty_print(couples):
 
 def normalize_scores(max_value, scores):
 	max_score = max([x for (y,x) in scores])
+	min_score = min([x for (y,x) in scores])
+	if min_score < 0:
+		scores = map(lambda (x,y): (x,y - min_score), scores)
 	return map(lambda (x,y): (x,y*max_value/max_score), scores)
 
 def normalize_scores_college(max_value, scores):
 	max_score = max([x for (y,(x,z)) in scores])
+	min_score = min([x for (y,(x,z)) in scores])
+	if min_score < 0:
+		scores = map(lambda (x,(y,z)): (x,(y - min_score,z)), scores)
+		max_score = max([x for (y,(x,z)) in scores])
+
 	return map(lambda (x,(y,z)): (x,(y*max_value/max_score, z)), scores)
 
 def normalize(parameter, key, season):
@@ -107,31 +115,7 @@ def populate():
 	getAndInsertAllStatsByType('min')
 
 
-if __name__ == '__main__':
-	if sys.argv[1] == "aggregate":
-		with open(sys.argv[2]) as f:
-			reader = csv.reader(f, delimiter='\t')
-			university = ""
-			score = 0
-			alumni = 0
-			for line in reader:
-				try:
-					if university == "":
-						university = line[0]
-						score = float(line[1])
-						alumni = float(line[2])
-					if university != line[0]:
-						print('\t'.join([university, str(score), str(alumni)]))
-						university = line[0]
-						score = float(line[1])
-						alumni = float(line[2])
-					else:
-						score += float(line[1])
-						alumni = float(line[2])
-				except IndexError:
-					reader.next()
 
-			print('\t'.join([university, str(score), str(alumni)]))
  
 
 

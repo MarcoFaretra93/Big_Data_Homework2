@@ -8,3 +8,5 @@ mongo-hadoop/
 build/
 dist/
 pymongo_spark.egg-info/
+*.zip
+*.txt
