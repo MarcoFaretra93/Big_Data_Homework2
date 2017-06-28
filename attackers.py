@@ -71,13 +71,8 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 			if(checkTreshold(season, 'mean', tresholds, player, redisClient)):
 				count += 1 
 				for percentageKey in percentage.keys():
-					if normalizer:
-						normalizeValue = util.normalize(allParameters[percentageKey], percentageKey, season)
-						annualScore += float(normalizeValue) * float(percentage[percentageKey])
-						totalScore += float(normalizeValue) * float(percentage[percentageKey])
-					else:
-						annualScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
-						totalScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
+					annualScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
+					totalScore += float(allParameters[percentageKey]) * float(percentage[percentageKey])
 			if bonus != None:
 				for b in bonus:
 					totalScore += annualScore * getBonus(b, season, allParameters, redisClient)
@@ -108,18 +103,12 @@ def splitRedisRecord(limit, spark_context):
 	return spark_context.union(parallel_players)
 
 def analyze(percentage, tresholds, out = False, bonus = None, normalizer = False):
-	parallel_players = []
-	if sc.getConf().get("provider") == 'mongo':
-		#players = db.basketball_reference.find()
-		#parallel_players = sc.parallelize([p for p in players])
-		parallel_players = sc.mongoRDD('mongodb://ec2-34-209-195-193.us-west-2.compute.amazonaws.com:27017/basketball_reference.basketball_reference')
-	if sc.getConf().get("provider") == 'redis':
-		limit = sc.getConf().get('limit')
-		parallel_players = splitRedisRecord(limit, sc)
+	parallel_players = sc.mongoRDD('mongodb://ec2-34-209-195-193.us-west-2.compute.amazonaws.com:27017/basketball_reference.basketball_reference')
 	scores = parallel_players.map(lambda player: score4Player(player, percentage, tresholds, bonus, normalizer))
 	if out:
 		print scores.collect()
 	else:
+		print score.collect()
 		return scores
 
 
