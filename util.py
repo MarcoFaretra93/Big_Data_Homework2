@@ -33,6 +33,8 @@ def normalize_scores(max_value, scores):
 	min_score = min([x for (y,x) in scores])
 	if min_score < 0:
 		scores = map(lambda (x,y): (x,y - min_score), scores)
+		max_score = max([x for (y,x) in scores])
+
 	return map(lambda (x,y): (x,y*max_value/max_score), scores)
 
 def normalize_scores_college(max_value, scores):
