@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.3.10)  3 JUL 2017 14:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.3.10)  3 JUL 2017 16:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -731,39 +731,29 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <13> not available
 [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 59--60
-
- []
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 65.
 
 [2]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 67.
- [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 67.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 65.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 67.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 67.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 65.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 65.
+Package rerunfilecheck Info: File `paper.out' has not changed.
+(rerunfilecheck)             Checksum: 8DF3709B21684D18754F87EB0C7518C7;329.
 
-
-Package rerunfilecheck Warning: File `paper.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `paper.out':
-(rerunfilecheck)             Before: 980A5E32C8746DC1B03E541AE6927BDE;285
-(rerunfilecheck)             After:  8DF3709B21684D18754F87EB0C7518C7;329.
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
  ) 
 Here is how much of TeX's memory you used:
- 7711 strings out of 493014
- 107040 string characters out of 6133351
- 213575 words of memory out of 5000000
- 11142 multiletter control sequences out of 15000+600000
+ 7710 strings out of 493014
+ 107034 string characters out of 6133351
+ 212575 words of memory out of 5000000
+ 11143 multiletter control sequences out of 15000+600000
  11502 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 29i,8n,43p,941b,338s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 29i,8n,43p,941b,336s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><
 /usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
@@ -771,10 +761,10 @@ sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr
 /local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/lo
 cal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local
 /texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb>
-Output written on paper.pdf (3 pages, 91712 bytes).
+Output written on paper.pdf (2 pages, 88370 bytes).
 PDF statistics:
- 85 PDF objects out of 1000 (max. 8388607)
- 72 compressed objects within 1 object stream
- 15 named destinations out of 1000 (max. 500000)
- 49 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 82 PDF objects out of 1000 (max. 8388607)
+ 70 compressed objects within 1 object stream
+ 13 named destinations out of 1000 (max. 500000)
+ 57 words of extra memory for PDF output out of 10000 (max. 10000000)
 

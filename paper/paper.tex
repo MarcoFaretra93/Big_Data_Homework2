@@ -43,21 +43,19 @@ A tale scopo si sono individuate 6 categorie di giocatori: tiratori (divisa a su
 
 \section{SETTING}
 
-I dati sulle statistiche di tutta la storia NBA non vengono forniti attraverso REST API. Quindi per effettuare le nostre analisi, abbiamo effettuato delle operazioni di scraping da basketball reference \footnote{http://www.basketball-reference.com/}, un motore che contiene tutte le statistiche NBA dal 1946 ad oggi.
-Il nostro processo di estrazione dati, si è suddiviso in diversi passaggi, per prima cosa abbiamo estratto gli identificativi di tutti i giocatori con associato il college di appartenenza e gli anni in cui hanno giocato in NBA. Successivamente abbiamo scaricato le pagine html che contengono le statistiche (misurate per partita) per ogni stagione di ogni giocatore, per poi infine abbiamo estratto attraverso degli xpath i dati che avremmo utilizzato per calcolare le statistiche.
+Siamo partiti da un dataset iniziale che contiene tutte le statistiche NBA dal 1946 ad oggi.\newline
+Abbiamo poi effettuato delle operazioni di clean dei dati di questo dataset, e di salvare i dati in un database di tipo big data.
 
 \section{APPROCCIO}
 
-Per i dati estratti abbiamo pensato di utilizzare un database document-store ed un key-value store per salvare i nostri dati. \newline
-Il database orientato ai documenti utilizzato per persistere i dati completi, che contiene ogni giocatore, con tutte le stagioni da lui giocate e tutte le partite.\newline 
-Mentre il key-value store utilizzato per prendere dati che vengono acceduti spesso in modo abbastanza veloce, ad esempio ci siamo resi conto che poteva tornarci utile calcolarci media e varianza per ogni stagione, per il calcolo dello score, e risulta comodo avere un key-value store che mantenga questi dati, poiché verranno acceduti frequentemente. \newline
-Per il calcolo dello score, vengono effettuate delle verifiche riguardo delle soglie specificate, e vengono prese in considerazione delle percentuali da applicare alla particolare statistica di interesse. Ad esempio per gli attaccanti abbiamo fissato come soglie che i tiri provati e i minuti giocati siano maggiori della media, e abbiamo dato un peso del 30\% alla percentuale effettiva di successo al tiro (sia tiri da due che tiri da tre), ed un 70\% ai punti totalizzati.\newline
-Per ogni categoria vengono quindi definite le soglie (campi che siano maggiori della media stagionale) e le percentuali sulle statistiche di interesse. Per alcune categorie, lo score non era del tutto pulito, quindi abbiamo deciso di utilizzare anche una formula di bonus/malus da poter applicare, ad esempio nella categoria dei difensori, oltre ai valori utilizzati per calcolare lo score, abbiamo pensato di tener conto anche dei falli personali (caratteristica che caratterizza un difensore), quindi assegniamo anche qui un bonus dove viene specificato la caratterstica di interesse (in questo esempio i falli personali), ed il peso. Questo bonus/malus andrà a sottrarsi allo score originale, di modo che se viene un numero negativo, allora con la sottrazione andrà a sommarsi e quindi ad assegnare un bonus, altrimenti andrà ad assegnare un malus abbassando lo score complessivo.
+Per i dati estratti dal dataset, poiché si tratta di dati storici (append-only), abbiamo pensato di utilizzare un database document-store, e di utilizzare un key-value store per le statistiche di base per ogni stagione e per la profilazione.\newline
+Per il calcolo dello score, vengono specificate delle soglie da soddisfarre per considerare un elemento, questo per evitare falsi positivi e falsi negativi, e delle percentuali riguardanti il peso per la singola statistica da considerare.
 
 \section{SOLUZIONE TECNOLOGICA}
 
-Come soluzione tecnologica per il nostro approccio abbiamo pensato di utilizzare MongoDB come document-store e Redis come key-value store, perché ci sono sembrate le tecnologie più famose e stabili per le rispettive famiglie di database.\newline
-
+Nella nostra soluzione tecnologica abbiamo pensato di utilizzare python, perché rispetto a Java risulta meno prolisso, con l'utilizzo del modulo pyspark.\newline
+Come document-store abbiamo pensato di utilizzare MongoDB, il databse più popolare della sua famiglia al momento, offre diversi connettori che permettono l'integrazione completa con pyspark, e consente un installazione molto semplice attraverso docker.\newline
+Per i stessi motivi come database key-value store, abbiamo scelto Redis.
 
 \section{RISULTATI}
 \section{CONCLUSIONI}
