@@ -1,0 +1,3 @@
+[submodule "infovis_NBA"]
+	path = infovis_NBA
+	url = https://github.com/gabmarini/infovis_NBA.git
