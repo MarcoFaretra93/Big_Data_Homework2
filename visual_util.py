@@ -22,6 +22,16 @@ def getPlayerName(ID):
 		if line[0] == ID:
 			return line[1]
 
+if sys.argv[1] == 'compact':
+	collection = db.basketball_reference
+	compacted = db.compacted
+	cursor = collection.find({},{"player_id":1, "college":1, "state":1, "seasons":1})
+	for record in cursor:
+		new_record = {"player_id":record['player_id'], "college":record['college'], "state":record['state']}
+		for key in record['seasons'].keys():
+			new_record[key] = record['seasons'][key]['all']
+		compacted.insert(new_record)
+
 if sys.argv[1] == 'colleges':
 	collection = db.colleges
 
