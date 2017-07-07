@@ -10,7 +10,8 @@ import redis
 import os.path
 import sys
 
-LETTERS = list(string.ascii_lowercase) #['b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z']
+LETTERS = list(string.ascii_lowercase) 
+""" xpath che abbiamo usato per estrarre i dati dalle pagine html """
 XPATH_PLAYERS_NAMES = "//th[@data-stat='player']/a/text()|//th[@data-stat='player']/strong/a/text()"
 XPATH_PLAYERS_IDS = "//th[@data-append-csv]/@data-append-csv"
 XPATH_PLAYERS_COLLEGE = "//td[@data-stat='college_name']"
@@ -33,8 +34,26 @@ client = pymongo.MongoClient(MONGO_LOCAL_CONNECTION)
 db = client['basketball_reference']
 redisClient = redis.StrictRedis(host='localhost', port=6379, db=0)
 
+""" Le funzioni downloadPage, getStateFromCollege, getAllPlayerBaseInfo, getStats e getGamesForPlayerForYear
+sono funzioni di setup che abbiamo effettuato una sola volta, per costruire i file con i dati che ci interessavano """
 
+""" funzione che scarica tutte le pagine di ogni stagione di ogni giocatore da basketball-reference """
+def downloadPage():
+	with open('stats.tsv', 'rb') as players:
+			url = 'http://www.basketball-reference.com/players/'
+			reader = csv.reader(players, delimiter = '\t', )
+			reader.next() #skip header
+			for line in reader:
+				if(line[2] != ''):
+					playerUrl = url + str(line[0][0]) + '/' + str(line[0]) + '/gamelog/' + line[1].split('-')[1]
+					if not os.path.isfile('html_pages/'+  str(line[0]) + '_' + line[1] + '.html'):
+						wget.download(playerUrl, 'html_pages/' +  str(line[0]) + '_' + line[1] + '.html')
+						#time.sleep(1)
+						print "finish: " + playerUrl 
+					else:
+						print 'skipped: ' + playerUrl
 
+""" funzione che dato un determinato college ritorna lo stato di appartenenza """
 def getStateFromCollege(collegeName):
 	if(collegeName == "null"):
 		return "null"
@@ -48,6 +67,8 @@ def getStateFromCollege(collegeName):
 		except Exception:
 			return "no state"
 
+""" funzione che costruisce il file player.csv con tutti i giocatori dell'NBA """
+""" Id giocatore, nome del giocatore, college, stato, da quando ha giocato, a quando ha giocato """
 def getAllPlayerBaseInfo(sleep = 1, outFile = 'player.csv'):
 	with open(outFile, 'wb') as csvfile:
 		writer = csv.writer(csvfile, delimiter = '\t')
@@ -90,6 +111,7 @@ def getAllPlayerBaseInfo(sleep = 1, outFile = 'player.csv'):
 			print "finish: " + url
 			time.sleep(sleep)
 
+""" funzione che costruisce il file stats.tsv contenete le statistiche globali per ogni stagione per ogni giocatore """
 def getStats(outFile = 'stats.tsv'):
 	with open(outFile, 'wb') as tsvfile:
 		writer = csv.writer(tsvfile, delimiter = '\t')
@@ -101,6 +123,7 @@ def getStats(outFile = 'stats.tsv'):
 				print "doing " + line[1]
 				ppExtractor.writePlayerStat(writer, line[0], line[4], line[5])
 
+""" funzione che costruisce il file game_result.tsv contente tutte le statistiche per ogni partita di ogni stagione di ogni giocatore """
 def getGamesForPlayerForYear(outFile = 'game_results.tsv'):
 	with open(outFile, 'wb') as tsvFile:
 		writer = csv.writer(tsvFile, delimiter = '\t')
@@ -140,21 +163,9 @@ def getGamesForPlayerForYear(outFile = 'game_results.tsv'):
 							pass
 					print "finish: " + str(line[0]) + '_' + line[1]
 
-def downloadPage():
-	with open('stats.tsv', 'rb') as players:
-			url = 'http://www.basketball-reference.com/players/'
-			reader = csv.reader(players, delimiter = '\t', )
-			reader.next() #skip header
-			for line in reader:
-				if(line[2] != ''):
-					playerUrl = url + str(line[0][0]) + '/' + str(line[0]) + '/gamelog/' + line[1].split('-')[1]
-					if not os.path.isfile('html_pages/'+  str(line[0]) + '_' + line[1] + '.html'):
-						wget.download(playerUrl, 'html_pages/' +  str(line[0]) + '_' + line[1] + '.html')
-						#time.sleep(1)
-						print "finish: " + playerUrl 
-					else:
-						print 'skipped: ' + playerUrl
-
+""" funzione che inserisce dentro mongo ogni giocatore, con tutte le stagioni e tutte le partite associate.
+Abbiamo utilizzato un parametro limit, principalmente per effettuare dei test su scala, per inserire tutti i 
+giocatori, basta passare limit = -1 """
 def insertAll(limit):
 	basketball_reference = db.basketball_reference.initialize_ordered_bulk_op()
 	counter = 0
@@ -199,11 +210,13 @@ def insertAll(limit):
 			game_score = line[29] if line[29] else '0'
 			plus_minus = line[30] if line[30] else '0'
 
+			""" se sono al primo passo setto curr_player e curr_season """
 			if(curr_player == ""):
 				curr_player = player_id
 			if(curr_season == ""):
 				curr_season = season
 
+			""" se il curr_player è diverso dal player_id appena letto, allora inserisco su mongo """
 			if(curr_player != player_id):
 				count += 1
 				collAndState = getCollegeAndState(curr_player)
@@ -233,6 +246,8 @@ def insertAll(limit):
 				if count == limit:
 					break
 
+			""" se la season letta è diversa dalla season corrente, allora inserisco la season corrente 
+			nella lista delle season del giocatore corrente e aggiorno """
 			if curr_season != season:
 				all_stats = insertSeasonStats(curr_season, curr_player)
 				if(all_game_score != 0):
@@ -270,27 +285,18 @@ def insertAll(limit):
 		result = basketball_reference.execute()
 		print result
 
+""" funzione di supporto per insert_all, dato un player_id, ritorna il suo college e lo stato di appartenenza """
 def getCollegeAndState(player_id):
 	result = {}
-	"""
-	with open('player.csv', 'rb') as players:
-		reader = csv.reader(players, delimiter = '\t', )
-		reader.next() #skip header
-		for line in reader:"""
 	for line in p_content:
 		if(line[0] == player_id):
 			result['college'] = line[2]
 			result['state'] = line[3]
 			return result
 
+""" funzione di supporto che costruisce un oggetto contenente le statistiche di una singola partita """
 def insertSeasonStats(season, player):
 	result = {}
-	"""
-	with open('stats.tsv', 'rb') as statistiche: 
-		reader = csv.reader(statistiche, delimiter = '\t', )
-		reader.next() #skip header
-		for line in reader:
-			"""
 	for line in s_content:
 		if(line[0] == player and line[1] == season):
 			result['games_played'] = line[2] if line[2] else '0'
@@ -319,6 +325,7 @@ def insertSeasonStats(season, player):
 			result['points'] = line[25] if line[25] else '0'
 			return result
 			
+""" funzione che prende i giocatori da mongo e li inserisce in redis """
 def insertIntoRedisFromMongo():
 	players = db.basketball_reference.find({},{'_id': False})
 	print players[0]['player_id']

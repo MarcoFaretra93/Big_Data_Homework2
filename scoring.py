@@ -13,8 +13,7 @@ LETTERS = list(string.ascii_lowercase)
 
 sc = SparkContext.getOrCreate()
 
-#redisc = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
-
+""" funzione che controlla se la soglia è soddisfatta o meno, e ritorna rispettivamente true o false """
 """ values = [(field_name, operator, modifier)] """
 def checkTreshold(season, op, values, player):
 	#sc = SparkContext.getOrCreate()
@@ -36,10 +35,10 @@ def checkTreshold(season, op, values, player):
 			return  False
 	return check
 
+""" funzione che applica un bonus allo score """
 """ scorefinale += scoreAnnuale * percent*(valore - mediaValore) """
 def getBonus(bonus, season, stats):
 	redisclient = redis.StrictRedis(host='localhost', port=6379, db=1)
-	#sc = SparkContext.getOrCreate()
 	meanStats = redisclient.get(season + '.mean')
 	header = redisclient.get('0000-0000').split(',')
 	meanStats = ast.literal_eval(meanStats)
@@ -52,7 +51,7 @@ def getBonus(bonus, season, stats):
 	else:
 		return bonus_value * (float(stats[bonus_name]) - float(meanStats[index])) * modifier
 
-
+""" funzione per il calcolo dello score di un giocatore """
 def score4Player(player, percentage, tresholds, bonus = None, normalizer = False):
 	redisClient = redis.StrictRedis(host="localhost", port=6379, db=1)
 	totalScore = 0
@@ -83,6 +82,7 @@ def score4Player(player, percentage, tresholds, bonus = None, normalizer = False
 	count = count if count != 0 else 1
 	return (player['player_id'], finalScore/count)
 
+""" funzione che splitta i record di redis, nel caso in cui volessi parallelizzare usando redis """
 def splitRedisRecord(limit, spark_context):
 	redisclient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 	parallel_players = []
@@ -103,6 +103,7 @@ def splitRedisRecord(limit, spark_context):
 			parallel_players.append(spark_context.parallelize(player_list))
 	return spark_context.union(parallel_players)
 
+""" funzione secondaria, che splitta i record di mongoDB, nel caso in cui non volessimo usare il connettore """
 def splitMongoRecord(limit, spark_context):
 	parallel_players = []
 	player_list = []
@@ -119,18 +120,16 @@ def splitMongoRecord(limit, spark_context):
 		parallel_players = spark_context.union(player_list)
 	return parallel_players
 
+""" funzione che calcola lo score su tutti i player parallelizzando, e infine normalizzando i valori
+su una scala da 0 a 100 """
 def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = False):
-	spark_context = sc #SparkContext.getOrCreate()
+	spark_context = sc 
 	parallel_players = []
 	if spark_context.getConf().get("provider") == 'mongo':
-		#players = db.basketball_reference.find()
-		#parallel_players = spark_context.parallelize([p for p in players])
 		parallel_players = spark_context.mongoRDD('mongodb://' + spark_context.getConf().get('mongo_host') + ':27017/basketball_reference.basketball_reference')
 	if spark_context.getConf().get("provider") == 'redis':
 		limit = spark_context.getConf().get('limit')
 		parallel_players = splitRedisRecord(limit, spark_context)
-	#scorer = Scorer(percentage, tresholds, bonus, normalizer)
-	#scores = scorer.startScoring(parallel_players)
 	f = lambda player: score4Player(player, percentage, tresholds, bonus, normalizer)	
 	scores = parallel_players.map(f)
 	if out:
@@ -138,14 +137,15 @@ def analyze(sc, percentage, tresholds, out = False, bonus = None, normalizer = F
 	else:
 		return scores
 
+""" funzione che prende il college del player passato come parametro e ritorna una coppia (college, (score,1)) """
 def collegeScore(player, score):
 	redisClient = redis.StrictRedis(host=sc.getConf().get('redis_connection'), port=6379, db=0)
 	college = ast.literal_eval(redisClient.get(player))['college']
 	return (college, (score,1))
 
-""" parallelizzare, i worker possono chiedere i dati a redis senza passare per il master """
+""" funzione che calcola lo score per tutti i college """
 def collegeAnalysis(sc, percentage, tresholds, bonus = None, category="", normalizer = False):
-	spark_context = sc #SparkContext.getOrCreate()
+	spark_context = sc 
 	player2Score = []
 	if not os.path.isfile('res_' + category + '.tsv'):
 		player2Score = analyze(sc, percentage, tresholds, bonus = bonus, normalizer = normalizer)
@@ -155,19 +155,3 @@ def collegeAnalysis(sc, percentage, tresholds, bonus = None, category="", normal
 
 	college2score = player2Score.map(lambda (player, score): collegeScore(player, score)).reduceByKey(lambda (score1,one1), (score2,one2): (score1+score2,one1+one2)).collect()
 	util.pretty_print(util.normalize_scores_college(100, college2score))
-
-"""
-	toBeParallelized = []
-	for player in player2Score:
-		college = ast.literal_eval(redisc.get(player))['college']
-		toBeParallelized.append((college, player[1], player[2]))
-	rdd = spark_context.parallelize(toBeParallelized)
-	college2score = rdd.map(lambda (college, player, score): (college, score)).reduce(lambda (score1, score2): score1+score2).collect()
-"""
-
-
-		
-
-
-
-

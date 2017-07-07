@@ -47,7 +47,6 @@ def extractBaseStats(page, playerId, season):
     row = applyXpaths(page, season, playerId, row)
     return row
 
-#controllare di prendere l'ultima stagione!!!
 def writePlayerStat(writer, playerId, debut, lastSeason, allSeason = True):
     url = 'http://www.basketball-reference.com/players/' + playerId[0] + '/' + playerId + '.html'
     page = lxml.html.parse(url).getroot()

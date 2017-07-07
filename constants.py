@@ -1,3 +1,5 @@
+""" modulo di configurazione dei parametri sul quale configurare lo score """
+
 MONGO_CONNECTION = "mongodb://localhost:27017/"
 REDIS_CONNECTION = ""
 

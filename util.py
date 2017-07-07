@@ -28,6 +28,7 @@ def flatten(T):
 def pretty_print(couples):
 	map(lambda x: print('\t'.join([str(y) for y in flatten(x)])), couples)
 
+""" funzione per normalizzare lo score per categorie """
 def normalize_scores(max_value, scores):
 	max_score = max([x for (y,x) in scores])
 	min_score = min([x for (y,x) in scores])
@@ -37,6 +38,7 @@ def normalize_scores(max_value, scores):
 
 	return map(lambda (x,y): (x,y*max_value/max_score), scores)
 
+""" funzione per normalizzare lo score per college """
 def normalize_scores_college(max_value, scores):
 	max_score = max([x for (y,(x,z)) in scores])
 	min_score = min([x for (y,(x,z)) in scores])
@@ -46,6 +48,7 @@ def normalize_scores_college(max_value, scores):
 
 	return map(lambda (x,(y,z)): (x,(y*max_value/max_score, z)), scores)
 
+""" funzione per normalizzare i valori di un singolo campo """
 def normalize(parameter, key, season):
 	field_names = redisClient.get('0000-0000').split(',')
 	maxValue = ast.literal_eval(redisClient.get(season + '.max'))
@@ -53,7 +56,7 @@ def normalize(parameter, key, season):
 	index = field_names.index(key)
 	return (float(parameter) - float(minValue[index]))/(float(maxValue[index]) - float(minValue[index]))
 
-""" legge da mongo e torna un dizionario {stagione : all_statistica di quell'anno per tutti i giocatori} """
+""" funzione che legge da mongo e torna un dizionario {stagione : all_statistica di quell'anno per tutti i giocatori} """
 def mongoRead():
 	years2stats = dict()
 	players = db.basketball_reference.find()
@@ -66,7 +69,7 @@ def mongoRead():
 				years2stats[year].append(np.array([float(x) if x != None and x != "" else 0 for x in player['seasons'][year]['all'].values()]))
 	return years2stats
 
-""" calcola media e varianza prendendo come input il risultato di mongoRead e l'op (mean o variance) """
+""" funzione che calcola media e varianza prendendo come input il risultato di mongoRead e l'op (mean o variance) """
 def calculateStats(years2stats, op):
 	result = dict()
 	for year in years2stats:
@@ -98,7 +101,7 @@ def calculateStats(years2stats, op):
 			result[year] = valuesList
 	return result
 
-""" prende il risultato di calculateStats e lo inserisce dentro redis """
+""" funzione che prende il risultato di calculateStats e lo inserisce dentro redis """
 def insertIntoRedis(dictionary, op):
 	for key in dictionary:
 		dictionary[key] = map(lambda s : s.strip(), dictionary[key])

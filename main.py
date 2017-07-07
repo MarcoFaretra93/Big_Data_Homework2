@@ -8,10 +8,11 @@ import argparse
 import sys
 import constants
 
+# define a spark conf 
 conf = SparkConf()
 conf.setAppName('NBA analysis')
-#conf.set("spark.eventlog.enabled", True)
 
+# define a type of argument from command line
 parser = argparse.ArgumentParser()
 
 parser.add_argument("action", help="the action that needs to be invoked", choices=["populate", "2_point_shooters", "3_point_shooters","attackers","defenders","rebounders","plus_minus", "all_around"])
@@ -21,8 +22,6 @@ parser.add_argument("-c", "--college", action="store_true", help="switch to coll
 parser.add_argument("-dp", "--data-provider", help="choose the data provider used during the worker parallelization. Redis is very slow", choices=["mongo", "redis"])
 parser.add_argument("-l", "--limit", help="choose the number of record parallelized at once, reducing ram usage but increasing network usage. Used only if the 'data-provider' is redis. default alphabetical splitting", default=0, type=int)
 
-
-
 args = parser.parse_args()
 
 constants.setRedisConnectionAddress(args.master_ip)
@@ -31,11 +30,13 @@ conf.set('provider', args.data_provider)
 conf.set('limit', args.limit)
 conf.set('mongo_host', args.master_ip)
 
+#define a spark context
 sc = SparkContext.getOrCreate(conf)
 
 import util
 import scoring
 
+# add the dependencies
 if args.distributed:
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/scoring.py')
 	sc.addPyFile('/home/hadoop/Big_Data_Homework2/util.py')
@@ -49,18 +50,16 @@ if args.distributed:
 
 bonus = None
 
+""" scelta della categoria da calcolare, eccetto populate che viene utilizzato per calcolare 
+media e varianza delle statistiche globali """
 if args.action == "populate":
 	util.populate()
 
 elif args.action == "2_point_shooters":
-	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
-	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
 	percentage = constants.twop_percentage
 	tresholds = constants.twop_tresholds
 
 elif args.action == "3_point_shooters":
-	""" percentage =  {2pointperc = 80%, free throws perc = 15%, 3pointperc = 5%} """
-	#score4Shooters({'2_field_goals_percentage' : 0.8, 'free_throws_percentage' : 0.15, 'three_field_goals_percentage' : 0.05}, [('2_field_goals_attempted', allParameters['2_field_goals_attempted'], '>='),('played_minutes', allParameters['played_minutes'], '>=', '0.5'),('games_played', allParameters['games_played'], '>='),('three_field_goals_attempted', allParameters['three_field_goals_attempted'], '>=')])
 	percentage = constants.threep_percentage
 	tresholds = constants.threep_tresholds
 
@@ -85,6 +84,7 @@ elif args.action == "all_around":
 	percentage = constants.all_around_percentage
 	tresholds = constants.all_around_tresholds
 
+""" chiamo la funzione che calcola lo score """
 if args.college and args.action != 'populate':
 	scoring.collegeAnalysis(sc, percentage, tresholds, bonus = bonus)
 elif args.action != 'populate':
