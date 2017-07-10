@@ -4,12 +4,13 @@
 ## Requisiti
 
 I requisiti per l'avvio del progetto in locale sono:
+* Python 2.7
 * Un'installazione di hadoop (noi abbiamo usato la 2.8)
 * L'installazione di spark 2.1.1 (non versioni inferiori)
 * L'installazione di mongoDB
 * L'installazione di Redis
 
-Per redis e mongoDB, noi abbiamo utilizzato docker, attraverso i seguenti comandi:
+Per redis e mongoDB, noi si è utilizzato docker, attraverso i seguenti comandi:
 
 * Per mongoDB:
 
