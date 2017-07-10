@@ -18,7 +18,7 @@ XPATH_PLAYERS_COLLEGE = "//td[@data-stat='college_name']"
 XPATH_PLAYERS_DEBUT = "//td[@data-stat='year_min']/text()"
 XPATH_PLAYERS_LAST_SEASON = "//td[@data-stat='year_max']/text()"
 
-MONGO_LOCAL_CONNECTION = "mongodb://localhost:27017/"
+MONGO_LOCAL_CONNECTION = sys.argv[4]
 
 with open('player.csv') as p:
 	reader = csv.reader(p, delimiter='\t')

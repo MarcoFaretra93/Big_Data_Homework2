@@ -24,11 +24,13 @@ parser.add_argument("-l", "--limit", help="choose the number of record paralleli
 
 args = parser.parse_args()
 
+constants.MONGO_CONNECTION = 'mongodb://' + args.master_ip + ':27017/'
 constants.setRedisConnectionAddress(args.master_ip)
 conf.set('redis_connection', args.master_ip)
 conf.set('provider', args.data_provider)
 conf.set('limit', args.limit)
 conf.set('mongo_host', args.master_ip)
+
 
 #define a spark context
 sc = SparkContext.getOrCreate(conf)

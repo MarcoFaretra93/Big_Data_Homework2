@@ -107,7 +107,7 @@ def splitRedisRecord(limit, spark_context):
 def splitMongoRecord(limit, spark_context):
 	parallel_players = []
 	player_list = []
-	mongoClient = pymongo.MongoClient(constants.MONGO_CONNECTION)
+	mongoClient = pymongo.MongoClient('mongodb://' + spark_context.getConf().get('mongo_host') + ':27017/')
 	db = mongoClient['basketball_reference']
 	if limit == 0:
 		parallel_players = spark_context.parallelize([x for x in db.basketball_reference.find()])
