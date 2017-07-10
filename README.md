@@ -30,37 +30,66 @@ Comando che crea un container di nome redis, con l'installazione al suo interno.
 
 ## Esecuzione 
 
-Per il popolamento dei db (Redis e Mongo), basta avviare il seguente script con i seguenti parametri: 
+È possibile vedere la documentazione completa dei parametri attraverso il comando: 
 
 ```
-./init.sh populate
+python init.py --help
 ```
 
-Dopo il popolamento, se si vogliono avviare i job spark (tutte le categorie definite): 
+### Popolamento dei DB
 
-* Raggruppando lo score della categoria per college:
-
-```
-./init.sh run_spark -c
-```
-
-* Raggruppando lo score della categoria per giocatore:
+Per popolare MongoDB e Redis, basta avviare lo script python, init.py con il parametro populate e specificando l'ip sul quale sono installati i databases. Ad esempio: 
 
 ```
-./init.sh run_spark
+python init.py all -c -dp mongo -ip localhost
 ```
 
-Altrimenti se si vuole avviare tutto insieme (popolamento più esecuzione di tutti i job):
+Successivamente è possibile avviare l'esecuzioni di spark sulle seguenti categorie:
 
-* Per college:
+* attackers
+* defenders
+* 2_point_shooters
+* 3_point_shooters
+* rebounders
+* plus_minus
+* all_around
+
+Specificandone la categoria dei giocatori è possibile quindi invocare le esecuzioni, di seguito alcuni esempi:
+
+Ad esempio per prendere tutti gli attaccanti ordinati per score del giocatore (utilizzando mongo come base di dati predefinita):
 
 ```
-./init.sh all -c
+python init.py attackers -dp mongo -ip localhost
 ```
 
-* Per giocatore:
+Prendere i college ordinati per score, in base a quello dei giocatori di appartenza:
 
 ```
-./init.sh all
+python init.py defenders -dp mongo -ip localhost -c 
 ```
 
+Se voglio avviare la mia esecuzione in ambiente distribuito:
+
+```
+python init.py defenders -dp mongo -ip localhost -c --dist
+```
+
+O posso anche utilizzare redis come base di dati predefinita, ad esempio: 
+
+```
+python init.py attackers -dp redis -ip localhost
+```
+
+Se invece volessi lanciare insieme tutte le categorie, basta inserire come categoria "all", ad esempio: 
+
+* Ordinati per score del giocatore:
+
+```
+python init.py all -dp mongo -ip localhost 
+``` 
+
+* Ordinati per score del college:
+
+```
+python init.py all -c -dp mongo -ip localhost 
+```
