@@ -28,8 +28,14 @@ if sys.argv[1] == 'compact':
 	cursor = collection.find({},{"player_id":1, "college":1, "state":1, "seasons":1})
 	for record in cursor:
 		new_record = {"player_id":record['player_id'], "college":record['college'], "state":record['state']}
-		for key in record['seasons'].keys():
-			new_record[key] = record['seasons'][key]['all']
+		new_record['seasons'] = []
+		seasons = []
+		for season in record['seasons'].keys():
+			stats = []
+			for stat in record['seasons'][season]['all']:
+				stats.append({stat: record['seasons'][season]['all'][stat]})
+			seasons.append({'season': season, 'stats': stats})
+		new_record['seasons'] = seasons
 		compacted.insert(new_record)
 
 if sys.argv[1] == 'colleges':
