@@ -216,7 +216,7 @@ def insertAll(limit):
 			if(curr_season == ""):
 				curr_season = season
 
-			""" se il curr_player è diverso dal player_id appena letto, allora inserisco su mongo """
+			""" se il curr_player e' diverso dal player_id appena letto, allora inserisco su mongo """
 			if(curr_player != player_id):
 				count += 1
 				collAndState = getCollegeAndState(curr_player)
@@ -246,7 +246,7 @@ def insertAll(limit):
 				if count == limit:
 					break
 
-			""" se la season letta è diversa dalla season corrente, allora inserisco la season corrente 
+			""" se la season letta e' diversa dalla season corrente, allora inserisco la season corrente 
 			nella lista delle season del giocatore corrente e aggiorno """
 			if curr_season != season:
 				all_stats = insertSeasonStats(curr_season, curr_player)

@@ -13,7 +13,7 @@ LETTERS = list(string.ascii_lowercase)
 
 sc = SparkContext.getOrCreate()
 
-""" funzione che controlla se la soglia è soddisfatta o meno, e ritorna rispettivamente true o false """
+""" funzione che controlla se la soglia e' soddisfatta o meno, e ritorna rispettivamente true o false """
 """ values = [(field_name, operator, modifier)] """
 def checkTreshold(season, op, values, player):
 	#sc = SparkContext.getOrCreate()
