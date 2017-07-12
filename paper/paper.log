@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  12 JUL 2017 18:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  12 JUL 2017 18:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1169,18 +1169,6 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <13> not available
 (Font)              size <12> substituted on input line 31.
 
 
-LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <13> not available
-(Font)              size <12> substituted on input line 39.
-
-
-LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <13> not available
-(Font)              size <12> substituted on input line 39.
-
-
-LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <13> not available
-(Font)              size <12> substituted on input line 39.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 39--39
 [][][]\OT1/cmr/m/n/8 https://www.bigdataball.com/nba-historical-playbyplay-
  []
@@ -1196,11 +1184,6 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 85.
-
-Overfull \hbox (1.88676pt too wide) in paragraph at lines 158--159
-[][] 
- []
-
 
 Overfull \hbox (0.94588pt too wide) in paragraph at lines 276--276
 [][] 
@@ -1222,29 +1205,31 @@ LaTeX Font Warning: Size substitutions with differences
 
  ) 
 Here is how much of TeX's memory you used:
- 27921 strings out of 494437
- 664384 string characters out of 6166645
- 971445 words of memory out of 5000000
- 30799 multiletter control sequences out of 15000+600000
- 11594 words of font info for 45 fonts, out of 8000000 for 9000
+ 27920 strings out of 494437
+ 664361 string characters out of 6166645
+ 970441 words of memory out of 5000000
+ 30798 multiletter control sequences out of 15000+600000
+ 12016 words of font info for 47 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
  62i,17n,103p,920b,2139s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx1
 2.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mex10.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmmi12.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmr10.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmr12.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr17.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr6.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr8.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2017basic/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on paper.pdf (6 pages, 153172 bytes).
+cm/cmmi10.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmmi7.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr10.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmr12.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr17.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2017basic/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2017basic/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on paper.pdf (6 pages, 166966 bytes).
 PDF statistics:
- 123 PDF objects out of 1000 (max. 8388607)
- 102 compressed objects within 2 object streams
+ 131 PDF objects out of 1000 (max. 8388607)
+ 108 compressed objects within 2 object streams
  20 named destinations out of 1000 (max. 500000)
  61 words of extra memory for PDF output out of 10000 (max. 10000000)
 
