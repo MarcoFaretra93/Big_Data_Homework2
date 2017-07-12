@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  12 JUL 2017 18:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.6.15)  12 JUL 2017 18:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1207,7 +1207,7 @@ LaTeX Font Warning: Size substitutions with differences
 Here is how much of TeX's memory you used:
  27920 strings out of 494437
  664361 string characters out of 6166645
- 970441 words of memory out of 5000000
+ 971441 words of memory out of 5000000
  30798 multiletter control sequences out of 15000+600000
  12016 words of font info for 47 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
@@ -1226,7 +1226,7 @@ pe1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2017basic/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2017basic/texmf-dist/fo
 nts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2017basic/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on paper.pdf (6 pages, 166966 bytes).
+Output written on paper.pdf (6 pages, 166943 bytes).
 PDF statistics:
  131 PDF objects out of 1000 (max. 8388607)
  108 compressed objects within 2 object streams
