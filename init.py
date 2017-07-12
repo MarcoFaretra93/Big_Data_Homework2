@@ -15,7 +15,7 @@ args = parser.parse_args()
 os.environ["PYTHONPATH"] = "mongo-hadoop/spark/src/main/python"
 
 if(args.action == "populate"):
-	#subprocess.check_call(["python estrattore.py all delete -1 " + args.master_ip], shell=True)
+	subprocess.check_call(["python estrattore.py all delete -1 " + args.master_ip], shell=True)
 	subprocess.check_call(["spark-submit main.py populate -ip " + args.master_ip], shell=True)
 elif(args.action == "all"):
 	subprocess.check_call(["spark-submit --driver-memory 6g --jars \"dependencies/mongo-hadoop-core-2.0.2.jar,dependencies/mongo-hadoop-spark-2.0.2.jar,dependencies/mongodb-driver-3.4.2.jar\" main.py -ip " + args.master_ip + " -dp " + args.data_provider + (' -c ' if args.college else ' ') + (' --dist ' if args.distributed else ' ') + (' --limit ' + args.limit if args.limit else ' ') + 'attackers' ], shell=True)
