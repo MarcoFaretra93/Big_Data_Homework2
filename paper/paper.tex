@@ -6,7 +6,6 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\usepackage{wrapfig}
 \usepackage{graphicx}
 \usepackage[plainpages=false]{hyperref}
 %\usepackage[all]{hypcap} 
@@ -73,10 +72,17 @@ Per tenere in conto quanti più giocatori possibili, anche quelli che hanno avut
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\linewidth]{arch}
-	\caption{L'architettura scelta}
+	\includegraphics[width=\linewidth]{arch}
+	\caption{L'architettura scelta, per la persistenza e per l'elaborazione distribuita}
 	\label{fig:arch}
 \end{figure}
+
+\begin{figure*}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{final}
+	\caption{Architettura finale}
+	\label{fig:finale}
+\end{figure*}
 
 Il linguaggio di riferimento scelto per orchestrare la computazione è Python, grazie alla sua estrema flessibilità e alla possibilità di prototipare una soluzione in breve tempo. Il motore di elaborazione è costituito principalmente da PySpark e Spark MLlib, sono presenti a contorno alcune librerie per il calcolo matematico offerte dall'ecosistema Python come NumPy.
 
@@ -102,7 +108,7 @@ Di seguito invece i risultati temporali ottenuti facendo partire un'analisi dei 
 \begin{itemize}
 	\item MacBook Pro mid 2012
 	\item CPU: 2.5GHz Intel Core i5
-	\item 12 GB Ram
+	\item 12 GB RAM
 	\item 500 GB HDD
 \end{itemize}
 
@@ -179,7 +185,7 @@ Oltre ai tempi precedenti si sono anche presi i tempi in locale con una macchina
 \begin{itemize}
 	\item MacBook Pro 2017
 	\item CPU: 2.9GHz Intel Core i7
-	\item 16 GB Ram
+	\item 16 GB RAM
 	\item 500GB SSD
 \end{itemize}
 
